@@ -1,0 +1,13 @@
+package newfarma.apinewfarma.laboratorio;
+
+import newfarma.apinewfarma.model.Laboratorio;
+import newfarma.apinewfarma.model.Producto;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
+
+public interface LaboratorioRepositoryJPA extends JpaRepository<Laboratorio,Long> {
+    @Query(value = "from Laboratorio p where p.idlaboratorio = ?1 ")
+    public List<Laboratorio> findByCodigoproducto(Integer codigo);
+}

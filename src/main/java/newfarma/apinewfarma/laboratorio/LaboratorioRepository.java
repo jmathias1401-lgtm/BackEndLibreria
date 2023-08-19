@@ -1,13 +1,16 @@
-package newfarma.apinewfarma.productos;
+package newfarma.apinewfarma.laboratorio;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.AllArgsConstructor;
-import newfarma.apinewfarma.productos.dto.ProductListRequest;
+import newfarma.apinewfarma.laboratorio.dto.LaboratorioListRequest;
+import newfarma.apinewfarma.model.Laboratorio;
+import newfarma.apinewfarma.model.Producto;
 import newfarma.apinewfarma.repository.BaseRepository;
 import newfarma.apinewfarma.utils.Util;
-import org.springframework.data.jpa.repository.JpaRepository;
-import newfarma.apinewfarma.model.Producto;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -16,17 +19,17 @@ import java.util.Map;
 
 @Repository
 @AllArgsConstructor
-public class ProductoRepository extends BaseRepository {
+public class LaboratorioRepository extends BaseRepository {
     private EntityManager entityManager;
 
-    public Object list(ProductListRequest params, String mode) {
+    public Object list(LaboratorioListRequest params, String mode) {
         Object response;
         CriteriaQuery query;
         List<Predicate> predicates = new ArrayList<>();
         Map mapParam = Util.dtoTomap(params);
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         query = mode.equals("L") ? builder.createQuery(Producto.class) : builder.createQuery(Long.class);
-        Root root = query.from(Producto.class);
+        Root root = query.from(Laboratorio.class);
         Predicate criteriaParams = builder.conjunction();
         Predicate criteriaSearch = builder.conjunction();
         List<String> eqFields = new ArrayList<String>() {{add("nombre");add("codbarra");}};
