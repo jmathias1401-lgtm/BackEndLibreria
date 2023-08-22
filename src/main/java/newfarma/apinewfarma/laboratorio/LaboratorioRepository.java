@@ -28,7 +28,7 @@ public class LaboratorioRepository extends BaseRepository {
         List<Predicate> predicates = new ArrayList<>();
         Map mapParam = Util.dtoTomap(params);
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        query = mode.equals("L") ? builder.createQuery(Producto.class) : builder.createQuery(Long.class);
+        query = mode.equals("L") ? builder.createQuery(Laboratorio.class) : builder.createQuery(Long.class);
         Root root = query.from(Laboratorio.class);
         Predicate criteriaParams = builder.conjunction();
         Predicate criteriaSearch = builder.conjunction();

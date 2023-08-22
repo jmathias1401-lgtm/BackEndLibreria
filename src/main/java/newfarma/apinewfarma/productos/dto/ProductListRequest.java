@@ -11,4 +11,5 @@ public class ProductListRequest {
     String nombre;
     String codbarra;
     String search;
+
 }
