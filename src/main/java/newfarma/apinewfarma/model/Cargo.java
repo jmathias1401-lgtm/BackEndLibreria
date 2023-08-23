@@ -6,13 +6,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="presentacion")
+@Table(name="Cargo")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Presentacion {
+public class Cargo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idpresentacion;
-    private String nombrepresentacion;
+    private Long idcargo;
+    private String nombrecargo;
+    private String descripcion;
+    @ManyToOne
+    @JoinColumn(name = "estado_idestado")
+    private Estado estado;
+
 }

@@ -17,6 +17,6 @@ import java.util.List;
 public class Laboratorio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idlaboratorio;
+    private Long idlaboratorio;
     private String nombrelaboratorio;
 }

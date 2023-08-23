@@ -32,21 +32,17 @@ public class LaboratorioRepository extends BaseRepository {
         Root root = query.from(Laboratorio.class);
         Predicate criteriaParams = builder.conjunction();
         Predicate criteriaSearch = builder.conjunction();
-        List<String> eqFields = new ArrayList<String>() {{add("nombre");add("codbarra");}};
-        List<String> likeFields = new ArrayList<String>() {{add("gameid");add("name");}};
+        List<String> eqFields = new ArrayList<String>() {{add("idlaboratorio");add("nombrelaboratorio");}};
+        List<String> likeFields = new ArrayList<String>() {{add("idlaboratorio");add("nombrelaboratorio");}};
         criteriaParams = this.addCriterias(criteriaParams, builder, root, mapParam, eqFields, "eq");
         // WITH THAT IS THE LIKE
         if (params.getSearch() != null) {
-            Predicate search = builder.like(
-                    builder.upper(builder.concat(builder.concat(root.get("name"), root.get("provider")),
-                            builder.concat(builder.concat(root.get("brand"), root.get("gameid")),
-                                    builder.concat(root.get("category"), root.get("type"))))),
-                    "%" + params.getSearch().toUpperCase() + "%");
+            Predicate search = builder.like(root.get("nombrelaboratorio"),"%" + params.getSearch().toUpperCase() + "%");
             criteriaSearch = this.addCriterias(search, builder, root, mapParam, likeFields, params.getSearch());
         }
         predicates.add(criteriaParams);
-        predicates.add(criteriaSearch);
-        query.select(mode.equals("L") ? root : builder.countDistinct(root)).where(predicates.toArray(new Predicate[0]));
+       predicates.add(criteriaSearch);
+        query.select(mode.equals("L") ? root : builder.count(root)).where(predicates.toArray(new Predicate[0]));
         response = mode.equals("L")
                 ? entityManager.createQuery(query).setMaxResults(params.getXpage()).setFirstResult(params.getOffset())
                 .getResultList()

@@ -13,7 +13,7 @@ public class BaseRepository {
 
         for (String field:fields) {
             if( params.containsKey(field) && params.get(field)!=null ){
-                Predicate w=null;
+                Predicate w=builder.conjunction();
                 switch (method){
                     case "eq": w=builder.equal(root.get(field), params.get(field) ); break;
                     case "like":w=builder.like(builder.lower(root.get(field)), "%" + params.get(field).toString().toLowerCase() + "%"); break;

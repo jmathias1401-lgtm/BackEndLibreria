@@ -8,7 +8,6 @@ public class LaboratorioListRequest {
     Integer page;
     Integer xpage;
     Integer offset;
-    String nombre;
-    String codbarra;
+    String nombrelaboratorio;
     String search;
 }

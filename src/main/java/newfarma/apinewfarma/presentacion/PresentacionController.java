@@ -1,7 +1,10 @@
 package newfarma.apinewfarma.presentacion;
+import newfarma.apinewfarma.model.Laboratorio;
+import newfarma.apinewfarma.model.Presentacion;
 import newfarma.apinewfarma.presentacion.dto.PresentacionListRequest;
 import newfarma.apinewfarma.presentacion.dto.PresentacionListResponse;
 import newfarma.apinewfarma.productos.ProductoRepositoryJPA;
+import newfarma.apinewfarma.utils.BaseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/presentacion")
 public class PresentacionController {
     PresentacionServiceI serviceI;
+
     public PresentacionController(PresentacionServiceI serviceI){
         this.serviceI=serviceI;
     }
@@ -18,5 +22,15 @@ public class PresentacionController {
     @ResponseBody
     public ResponseEntity<PresentacionListResponse>list(PresentacionListRequest params){
         return new ResponseEntity(serviceI.list(params), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    @PostMapping
+    @ResponseBody
+    public ResponseEntity<BaseResponse> save(@RequestBody Presentacion presentacion )
+    {
+        return new ResponseEntity(serviceI.save(presentacion), HttpStatus.OK);
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<BaseResponse> eliminar(@PathVariable Long id){
+        return new ResponseEntity(serviceI.eliminar(id),HttpStatus.OK);
     }
 }

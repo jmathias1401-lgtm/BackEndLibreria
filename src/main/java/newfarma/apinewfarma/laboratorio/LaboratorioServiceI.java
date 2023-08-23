@@ -9,4 +9,6 @@ public interface LaboratorioServiceI {
     LaboratorioListResponse list(LaboratorioListRequest params);
 
     BaseResponse save(Laboratorio laboratorio);
+
+    BaseResponse eliminar(Long id);
 }

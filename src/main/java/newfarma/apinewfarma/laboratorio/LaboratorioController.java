@@ -11,10 +11,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/laboratorio")
 class LaboratorioController {
     LaboratorioServiceI serviceI;
-    LaboratorioRepositoryJPA laboratorioRepositoryJPA;
+
     public LaboratorioController(LaboratorioServiceI serviceI){
         this.serviceI=serviceI;
-
     }
     @GetMapping
     @ResponseBody
@@ -26,5 +25,9 @@ class LaboratorioController {
     public ResponseEntity<BaseResponse> save(@RequestBody Laboratorio laboratorio )
     {
         return new ResponseEntity(serviceI.save(laboratorio), HttpStatus.OK);
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<BaseResponse> eliminar(@PathVariable Long id){
+        return new ResponseEntity(serviceI.eliminar(id),HttpStatus.OK);
     }
 }
