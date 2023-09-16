@@ -15,9 +15,9 @@ import java.util.List;
 @Service
 public class VentaService implements VentaServiceI {
     private final ventaRepository repository;
-    VentaRepositoryJPA PersonaRepositoryJPA;
-    public VentaService(VentaRepositoryJPA PersonaRepositoryJPA, ventaRepository repository){
-        this.PersonaRepositoryJPA=PersonaRepositoryJPA;
+    VentaRepositoryJPA ventaRepositoryJPA;
+    public VentaService(VentaRepositoryJPA ventaRepositoryJPA, ventaRepository repository){
+        this.ventaRepositoryJPA=ventaRepositoryJPA;
         this.repository=repository;
     }
     @Override
@@ -38,30 +38,28 @@ public class VentaService implements VentaServiceI {
         return response;
     }
     @Override
-    public BaseResponse save(Persona persona){
+    public BaseResponse save(Venta venta){
         BaseResponse response;
-        Persona persona1;
-        if(persona.getIdpersona()!=null)//actualiza un objeto existente
+        Venta venta1;
+        if(venta.getIdventa()!=null)//actualiza un objeto existente
         {
-            persona1=PersonaRepositoryJPA.findById(persona.getIdpersona()).get();
-            persona1.setDni(persona.getDni());
-            persona1.setRuc(persona.getRuc());
-            persona1.setNombre(persona.getNombre());
-            persona1.setMaterno(persona.getMaterno());
-            persona1.setPaterno(persona.getPaterno());
-            persona1.setFechanacimiento(persona.getFechanacimiento());
-            persona1.setTelefono(persona.getTelefono());
-            persona1.setCorreo(persona.getCorreo());
-            persona1.setSexo(persona.getSexo());
-            persona1.setDireccion(persona.getDireccion());
-            persona1.setTipoPersona(persona.getTipoPersona());
-            PersonaRepositoryJPA.save(persona1);
+            venta1=ventaRepositoryJPA.findById(venta.getIdventa()).get();
+            venta1.setCorrelativo(venta.getCorrelativo());
+            venta1.setSerie(venta.getSerie());
+            venta1.setFechaventa(venta.getFechaventa());
+            venta1.setIgv(venta.getIgv());
+            venta1.setSubtotal(venta.getSubtotal());
+            venta1.setCostoventa(venta.getCostoventa());
+            venta1.setCliente(venta.getCliente());
+            venta1.setEmpleado(venta.getEmpleado());
+            venta1.setTipoComprobante(venta.getTipoComprobante());
+            ventaRepositoryJPA.save(venta1);
             response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("UPDATE SUCESSFULLY").build();
         }else//crea un nuevo objeto
         {
-            boolean existName =PersonaRepositoryJPA.existsPersonaByDni(persona.getDni());
+            boolean existName =ventaRepositoryJPA.existsVentaByCorrelativo(venta.getCorrelativo());
             if (!existName){
-                PersonaRepositoryJPA.save(persona);
+                ventaRepositoryJPA.save(venta);
                 response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("SAVED SUCESSFULLY").build();
             }else{
                 response= BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).message("NOT SUCESS").build();
@@ -73,10 +71,10 @@ public class VentaService implements VentaServiceI {
     @Override
     public BaseResponse eliminar(Long id) {
         BaseResponse response;
-        Persona persona=PersonaRepositoryJPA.findById(id).orElseThrow(EntityNotFoundException::new);
-        if (persona.getIdpersona()!=null)
+        Venta venta=ventaRepositoryJPA.findById(id).orElseThrow(EntityNotFoundException::new);
+        if (venta.getIdventa()!=null)
         {
-            PersonaRepositoryJPA.delete(persona);
+            ventaRepositoryJPA.delete(venta);
             response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("DELETE SUCESSFULLY").build();
         }else {
             response= BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).message("NOT SUCESS").build();

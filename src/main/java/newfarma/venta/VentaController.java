@@ -1,5 +1,6 @@
 package newfarma.venta;
 import newfarma.model.Persona;
+import newfarma.model.Venta;
 import newfarma.venta.VentaRepositoryJPA;
 import newfarma.venta.VentaServiceI;
 import newfarma.utils.BaseResponse;
@@ -10,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 @RestController
-@RequestMapping("api/persona")
+@RequestMapping("api/venta")
 public class VentaController {
     VentaServiceI serviceI;
     VentaRepositoryJPA personaRepositoryJPA;
@@ -25,9 +26,9 @@ public class VentaController {
     }
     @PostMapping
     @ResponseBody
-    public ResponseEntity<BaseResponse> save(@RequestBody Persona persona )
+    public ResponseEntity<BaseResponse> save(@RequestBody Venta venta )
     {
-        return new ResponseEntity(serviceI.save(persona), HttpStatus.OK);
+        return new ResponseEntity(serviceI.save(venta), HttpStatus.OK);
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<BaseResponse> eliminar(@PathVariable Long id){

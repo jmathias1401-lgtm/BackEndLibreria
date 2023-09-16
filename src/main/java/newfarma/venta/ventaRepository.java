@@ -7,6 +7,7 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import lombok.AllArgsConstructor;
 import newfarma.model.Persona;
+import newfarma.model.Venta;
 import newfarma.venta.dto.VentaListRequest;
 import newfarma.repository.BaseRepository;
 import newfarma.utils.Util;
@@ -27,8 +28,8 @@ public class ventaRepository extends BaseRepository {
         List<Predicate> predicates = new ArrayList<>();
         Map mapParam = Util.dtoTomap(params);
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        query = mode.equals("L") ? builder.createQuery(Persona.class) : builder.createQuery(Long.class);
-        Root root = query.from(Persona.class);
+        query = mode.equals("L") ? builder.createQuery(Venta.class) : builder.createQuery(Long.class);
+        Root root = query.from(Venta.class);
         Predicate criteriaParams = builder.conjunction();
         Predicate criteriaSearch = builder.conjunction();
         List<String> eqFields = new ArrayList<String>() {{add("nombre");add("apellido");}};

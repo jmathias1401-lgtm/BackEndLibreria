@@ -1,5 +1,4 @@
 package newfarma.persona;
-
 import jakarta.persistence.EntityNotFoundException;
 import newfarma.model.Persona;
 import newfarma.model.Producto;
@@ -9,14 +8,12 @@ import newfarma.utils.BaseResponse;
 import newfarma.venta.VentaRepositoryJPA;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-
 @Service
 public class PersonaService implements PersonaServiceI {
     private final PersonaRepository repository;
-    VentaRepositoryJPA PersonaRepositoryJPA;
-    public PersonaService(VentaRepositoryJPA PersonaRepositoryJPA, PersonaRepository repository){
+    PersonaRepositoryJPA PersonaRepositoryJPA;
+    public PersonaService(PersonaRepositoryJPA PersonaRepositoryJPA, PersonaRepository repository){
         this.PersonaRepositoryJPA=PersonaRepositoryJPA;
         this.repository=repository;
     }
