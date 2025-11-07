@@ -21,7 +21,7 @@ public class PersonaController {
     @GetMapping
     @ResponseBody
     public ResponseEntity<PersonaListResponse>list(PersonaListRequest params){
-        return new ResponseEntity(serviceI.list(params), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity(serviceI.list(params), HttpStatus.OK);
     }
     @PostMapping
     @ResponseBody

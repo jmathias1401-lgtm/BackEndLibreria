@@ -34,9 +34,7 @@ public class ProductoRepository extends BaseRepository {
         // WITH THAT IS THE LIKE
         if (params.getSearch() != null) {
             Predicate search = builder.like(
-                    builder.upper(builder.concat(builder.concat(root.get("name"), root.get("provider")),
-                            builder.concat(builder.concat(root.get("brand"), root.get("gameid")),
-                                    builder.concat(root.get("category"), root.get("type"))))),
+                    builder.upper(builder.concat(root.get("nombre"), root.get("composicion"))),
                     "%" + params.getSearch().toUpperCase() + "%");
             criteriaSearch = this.addCriterias(search, builder, root, mapParam, likeFields, params.getSearch());
         }

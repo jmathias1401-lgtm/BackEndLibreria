@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("api/presentacion")
 public class PresentacionController {
@@ -19,7 +19,7 @@ public class PresentacionController {
     @GetMapping
     @ResponseBody
     public ResponseEntity<PresentacionListResponse>list(PresentacionListRequest params){
-        return new ResponseEntity(serviceI.list(params), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity(serviceI.list(params), HttpStatus.OK);
     }
     @PostMapping
     @ResponseBody

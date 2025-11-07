@@ -24,17 +24,19 @@ public class Producto {
     //private Integer unidadmedida_idunidadmedida;
     //private Integer laboratorio_idlaboratorio;
     private Integer stock;
-    private Integer precioventa;
-    private Integer precioblister;
-    private Integer preciocaja;
+    private Double precioventa;
+    private Double precioblister;
+    private Double preciocaja;
     private String codbarra;
+
     @ManyToOne
-    //@JoinColumn(name = "laboratorio_idlaboratorio",referencedColumnName = "idlaboratorio") referencial pero no obligatorio
     @JoinColumn(name = "laboratorio_idlaboratorio")
     private Laboratorio laboratorio;
+
     @ManyToOne
     @JoinColumn(name = "presentacion_idpresentacion")
     private Presentacion presentacion;
+
     @ManyToOne
     @JoinColumn(name = "unidadmedida_idunidadmedida")
     private UnidadMedida unidadMedida;

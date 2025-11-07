@@ -19,7 +19,7 @@ public class UnidadMedidaController {
     @GetMapping
     @ResponseBody
     public ResponseEntity<UnidadMedidaListResponse>list(UnidadMedidaListRequest params){
-        return new ResponseEntity(serviceI.list(params), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity(serviceI.list(params), HttpStatus.OK);
     }
     @PostMapping
     @ResponseBody

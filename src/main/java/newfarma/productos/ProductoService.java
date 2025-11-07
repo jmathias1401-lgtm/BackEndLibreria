@@ -38,10 +38,27 @@ public class ProductoService implements ProductoServiceI{
         return response;
     }
     @Override
+    public ProductListResponse ProductListById(int id){
+        ProductListResponse response;
+        List<Producto> listProductos = productoRepositoryJPA.listProductosById(id);
+
+        response =ProductListResponse.builder()
+                .page(listProductos.size())
+                .total(listProductos.size())
+                .xpage(listProductos.size())
+                .list(listProductos)
+                .build();
+        return response;
+    }
+    @Override
     public BaseResponse save(Producto producto){
+        String date=producto.getVencimiento();
+        String [] partes=date.split("-");
+        String dateParse=partes[2]+"/"+partes[1]+"/"+partes[0];
+        producto.setVencimiento(dateParse);
         BaseResponse response;
         Producto producto1;
-        if(producto.getIdproducto()!=null)//actualiza un objeto existente
+        if(producto.getIdproducto()!=null && producto.getIdproducto()!=0)//actualiza un objeto existente
         {
             producto1=productoRepositoryJPA.findById(producto.getIdproducto()).get();
             producto1.setCodigoproducto(producto.getCodigoproducto());
@@ -85,5 +102,10 @@ public class ProductoService implements ProductoServiceI{
             response= BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).message("NOT SUCESS").build();
         }
         return response;
+    }
+    @Override
+    public int CountProducto()
+    {
+        return productoRepositoryJPA.CountProduct();
     }
 }

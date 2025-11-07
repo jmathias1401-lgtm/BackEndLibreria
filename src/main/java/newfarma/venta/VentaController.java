@@ -22,7 +22,7 @@ public class VentaController {
     @GetMapping
     @ResponseBody
     public ResponseEntity<VentaListResponse>list(VentaListRequest params){
-        return new ResponseEntity(serviceI.list(params), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity(serviceI.list(params), HttpStatus.OK);
     }
     @PostMapping
     @ResponseBody

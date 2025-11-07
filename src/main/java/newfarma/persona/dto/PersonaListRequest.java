@@ -9,7 +9,7 @@ public class PersonaListRequest {
     Integer xpage;
     Integer offset;
     String nombre;
-    String codbarra;
+    Integer dni;
     String search;
 
 }

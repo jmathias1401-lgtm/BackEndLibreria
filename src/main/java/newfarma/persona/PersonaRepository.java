@@ -31,7 +31,7 @@ public class PersonaRepository extends BaseRepository {
         Root root = query.from(Persona.class);
         Predicate criteriaParams = builder.conjunction();
         Predicate criteriaSearch = builder.conjunction();
-        List<String> eqFields = new ArrayList<String>() {{add("nombre");add("apellido");}};
+        List<String> eqFields = new ArrayList<String>() {{add("nombre");add("apellido");add("dni");}};
         List<String> likeFields = new ArrayList<String>() {{add("gameid");add("name");}};
         criteriaParams = this.addCriterias(criteriaParams, builder, root, mapParam, eqFields, "eq");
         // WITH THAT IS THE LIKE

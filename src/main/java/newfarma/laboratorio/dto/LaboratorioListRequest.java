@@ -10,4 +10,5 @@ public class LaboratorioListRequest {
     Integer offset;
     String nombrelaboratorio;
     String search;
+    int id;
 }

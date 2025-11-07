@@ -10,4 +10,11 @@ public interface ProductoRepositoryJPA extends JpaRepository<Producto,Long> {
     @Query(value = "from Producto p where p.codigoproducto = ?1 ")
     public List<Producto> findByCodigoproducto(String codigo);
     public boolean existsProductoByCodbarra(String codigo);
+
+    @Query( value = "select * from Producto p where p.idproducto =?1",  nativeQuery = true)
+    public List<Producto> listProductosById(Integer productId);
+
+    @Query(value = "select count(*) from Producto",nativeQuery = true)
+    public Integer CountProduct();
+
 }
