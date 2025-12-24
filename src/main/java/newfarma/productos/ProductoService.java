@@ -53,7 +53,7 @@ public class ProductoService implements ProductoServiceI{
     @Override
     public BaseResponse save(Producto producto){
         String date=producto.getVencimiento();
-        String [] partes=date.split("-");
+        String [] partes=date.split("/");
         String dateParse=partes[2]+"/"+partes[1]+"/"+partes[0];
         producto.setVencimiento(dateParse);
         BaseResponse response;

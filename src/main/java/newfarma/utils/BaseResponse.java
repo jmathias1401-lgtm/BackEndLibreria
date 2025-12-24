@@ -14,4 +14,5 @@ public class BaseResponse {
     private String code;
     private Integer status;
     private String message;
+    private Long idVenta;
 }

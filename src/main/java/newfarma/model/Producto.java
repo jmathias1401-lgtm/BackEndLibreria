@@ -20,9 +20,6 @@ public class Producto {
     private String estado;
     private String composicion;
     private String ubicacion;
-    //private Integer presentacion_idpresentacion;
-    //private Integer unidadmedida_idunidadmedida;
-    //private Integer laboratorio_idlaboratorio;
     private Integer stock;
     private Double precioventa;
     private Double precioblister;

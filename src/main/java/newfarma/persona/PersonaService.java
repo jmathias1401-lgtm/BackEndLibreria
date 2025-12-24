@@ -61,7 +61,7 @@ public class PersonaService implements PersonaServiceI {
                 PersonaRepositoryJPA.save(persona);
                 response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("SAVED SUCESSFULLY").build();
             }else{
-                response= BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).message("NOT SUCESS").build();
+                response= BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).message("NOT SAVED PERSONA EXIST IN DB").build();
             }
         }
 

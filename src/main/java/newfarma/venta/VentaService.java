@@ -59,10 +59,13 @@ public class VentaService implements VentaServiceI {
         {
             boolean existName =ventaRepositoryJPA.existsVentaByCorrelativo(venta.getCorrelativo());
             if (!existName){
-                ventaRepositoryJPA.save(venta);
-                response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("SAVED SUCESSFULLY").build();
+               Long idventa= ventaRepositoryJPA.save(venta).getIdventa();
+
+                response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("SAVED SUCESSFULLY")
+                        .idVenta(idventa)
+                        .build();
             }else{
-                response= BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).message("NOT SUCESS").build();
+                response= BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).message("NOT SUCESS BY CORRELATIVO EXISTE IN DB").build();
             }
         }
 
