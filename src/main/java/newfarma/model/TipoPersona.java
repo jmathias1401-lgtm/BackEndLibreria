@@ -1,9 +1,13 @@
 package newfarma.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="tipopersona")
@@ -15,5 +19,4 @@ public class TipoPersona {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idtipopersona;
     private String nombre;
-
 }
