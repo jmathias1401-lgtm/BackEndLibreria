@@ -1,9 +1,12 @@
 package newfarma.productos;
 
 import jakarta.persistence.EntityNotFoundException;
+import newfarma.laboratorio.LaboratorioService;
 import newfarma.model.Producto;
+import newfarma.presentacion.PresentacionService;
 import newfarma.productos.dto.ProductListRequest;
 import newfarma.productos.dto.ProductListResponse;
+import newfarma.unidadmedida.UnidadMedidaService;
 import newfarma.utils.BaseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,9 +18,16 @@ public class ProductoService implements ProductoServiceI{
 
     private final ProductoRepository repository;
     ProductoRepositoryJPA productoRepositoryJPA;
-    public ProductoService(ProductoRepositoryJPA productoRepositoryJPA,ProductoRepository repository){
+    LaboratorioService laboratorioService;
+    PresentacionService presentacionService;
+    UnidadMedidaService unidadMedidaService;
+    public ProductoService(ProductoRepositoryJPA productoRepositoryJPA,ProductoRepository repository,LaboratorioService laboratorioService,PresentacionService presentacionService,
+    UnidadMedidaService unidadMedidaService){
         this.productoRepositoryJPA=productoRepositoryJPA;
         this.repository=repository;
+        this.laboratorioService=laboratorioService;
+        this.presentacionService=presentacionService;
+        this.unidadMedidaService=unidadMedidaService;
     }
 
     @Override
@@ -53,7 +63,7 @@ public class ProductoService implements ProductoServiceI{
     @Override
     public BaseResponse save(Producto producto){
         String date=producto.getVencimiento();
-        String [] partes=date.split("/");
+        String [] partes=date.split("-");
         String dateParse=partes[2]+"/"+partes[1]+"/"+partes[0];
         producto.setVencimiento(dateParse);
         BaseResponse response;
@@ -76,6 +86,7 @@ public class ProductoService implements ProductoServiceI{
             producto1.setUnidadMedida(producto.getUnidadMedida());
             producto1.setLaboratorio(producto.getLaboratorio());
             productoRepositoryJPA.save(producto1);
+
             response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("UPDATE SUCESSFULLY").build();
         }else//crea un nuevo objeto
         {
