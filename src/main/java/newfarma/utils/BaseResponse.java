@@ -15,4 +15,5 @@ public class BaseResponse {
     private Integer status;
     private String message;
     private Long idVenta;
+    private Long idCompra;
 }

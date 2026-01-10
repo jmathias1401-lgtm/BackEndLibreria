@@ -11,5 +11,6 @@ public class ProveedorListRequest {
     String nombre;
     String ruc;
     String search;
-    int id;
+    Integer idproveedor;
+    Integer persona_idpersona;
 }

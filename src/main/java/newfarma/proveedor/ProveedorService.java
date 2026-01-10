@@ -1,6 +1,7 @@
 package newfarma.proveedor;
 
 import jakarta.persistence.EntityNotFoundException;
+import newfarma.persona.PersonaService;
 import newfarma.proveedor.dto.ProveedorListRequest;
 import newfarma.proveedor.dto.ProveedorResponse;
 
@@ -14,9 +15,11 @@ import java.util.List;
 public class ProveedorService implements ProveedorServiceI {
     private final ProveedorRepository repository;
     private final ProveedorRepositoryJPA repositoryJPA;
-    public ProveedorService(ProveedorRepository repository, ProveedorRepositoryJPA repositoryJPA){
+    private final PersonaService ServicioPersona;
+    public ProveedorService(ProveedorRepository repository, ProveedorRepositoryJPA repositoryJPA,PersonaService ServicioPersona ){
         this.repository=repository;
         this.repositoryJPA=repositoryJPA;
+        this.ServicioPersona =ServicioPersona;
     }
     @Override
     public ProveedorResponse list(ProveedorListRequest params) {
@@ -45,7 +48,7 @@ public class ProveedorService implements ProveedorServiceI {
             proveedor1=repositoryJPA.findById(proveedor.getIdproveedor()).get();
             proveedor1.setPersona(proveedor.getPersona());
             repositoryJPA.save(proveedor1);
-
+            ServicioPersona.save(proveedor.getPersona());
             response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("UPDATE SUCESSFULLY").build();
         }else//crea un nuevo objeto
         {
