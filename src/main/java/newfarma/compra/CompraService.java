@@ -54,7 +54,8 @@ public class CompraService implements CompraServiceI {
         }else//crea un nuevo objeto
         {
             boolean existCorrelativo =compraRepositoryJPA.existsCompraByCorrelativo(compra.getCorrelativo());
-            if (!existCorrelativo){
+            boolean existeSerie=compraRepositoryJPA.existsCompraBySerieAndAndCorrelativo(compra.getCorrelativo(),compra.getSerie());
+            if (!existeSerie){
                Long idcompra= compraRepositoryJPA.save(compra).getIdcompra();
 
                 response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("SAVED SUCESSFULLY")
