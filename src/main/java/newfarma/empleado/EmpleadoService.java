@@ -49,6 +49,7 @@ public class EmpleadoService implements EmpleadoServiceI {
             empleado1.setPersona(empleado.getPersona());
             empleado1.setUsuario(empleado.getUsuario());
             repositoryJPA.save(empleado1);
+
             response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("UPDATE SUCESSFULLY").build();
         } else//crea un nuevo objeto
         {

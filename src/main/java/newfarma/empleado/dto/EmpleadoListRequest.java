@@ -11,5 +11,6 @@ public class EmpleadoListRequest {
     Long persona_idpersona;
     Long estado_idestado;
     Long usuario_idusuario;
+    Long idempleado;
     String search;
 }
