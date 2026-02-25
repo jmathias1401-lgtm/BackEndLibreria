@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import newfarma.detalleventa.dto.DetalleVentaListRequest;
 import newfarma.repository.BaseRepository;
 import newfarma.utils.Util;
-import newfarma.model.DetalleVenta;
+import newfarma.model.detalleventa;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -24,8 +24,8 @@ public class DetalleVentaRepository extends BaseRepository {
         List<Predicate> predicates = new ArrayList<>();
         Map mapParam = Util.dtoTomap(params);
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        query = mode.equals("L") ? builder.createQuery(DetalleVenta.class) : builder.createQuery(Long.class);
-        Root root = query.from(DetalleVenta.class);
+        query = mode.equals("L") ? builder.createQuery(detalleventa.class) : builder.createQuery(Long.class);
+        Root root = query.from(detalleventa.class);
         Predicate criteriaParams = builder.conjunction();
         Predicate criteriaSearch = builder.conjunction();
         List<String> eqFields = new ArrayList<String>() {{add("codigodetalleventa");add("idventa");}};

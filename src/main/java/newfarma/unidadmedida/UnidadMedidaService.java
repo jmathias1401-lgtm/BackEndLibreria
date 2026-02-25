@@ -40,7 +40,7 @@ public class UnidadMedidaService implements UnidadMedidaServiceI {
     public BaseResponse save(UnidadMedida unidadMedida){
         BaseResponse response;
         UnidadMedida unidadMedida1;
-        if(unidadMedida.getIdunidadmedida()!=null)//actualiza un objeto existente
+        if(unidadMedida.getIdunidadmedida()!=null && unidadMedida.getIdunidadmedida()!=0)//actualiza un objeto existente
         {
             unidadMedida1=unidadMedidaRepositoryJPA.findById(unidadMedida.getIdunidadmedida()).get();
             unidadMedida1.setNombreunidad(unidadMedida.getNombreunidad());
@@ -60,7 +60,7 @@ public class UnidadMedidaService implements UnidadMedidaServiceI {
         return response;
     }
     @Override
-    public BaseResponse eliminar(Long id) {
+    public BaseResponse eliminar(Integer id) {
         BaseResponse response;
         UnidadMedida unidadMedida=unidadMedidaRepositoryJPA.findById(id).orElseThrow(EntityNotFoundException::new);
         if (unidadMedida.getIdunidadmedida()!=null)

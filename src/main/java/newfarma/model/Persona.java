@@ -27,7 +27,7 @@ public class Persona {
     private String sexo;
     private String direccion;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name="tipopersona_idtipopersona")
     private TipoPersona tipoPersona;
 }

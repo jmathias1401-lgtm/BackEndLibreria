@@ -53,32 +53,23 @@ public class UsuarioService implements UsuarioServiceI{
         return response;
     }
     @Override
-    public BaseResponse save(Usuario usuario){
-        BaseResponse response;
-        Usuario usuario1;
-        if(usuario.getIdusuario()!=null && usuario.getIdusuario()!=0)//actualiza un objeto existente
-        {
-            usuario1=usuarioRepositoryJPA.findById(usuario.getIdusuario()).get();
+    public Usuario save(Usuario usuario) {
+        if (usuario.getIdusuario() != null && usuario.getIdusuario() != 0) {
+            Usuario usuario1 = usuarioRepositoryJPA.findById(usuario.getIdusuario()).get();
             usuario1.setNombreusuario(usuario.getNombreusuario());
             usuario1.setClave(usuario.getClave());
             usuario1.setFechacreacion(usuario.getFechacreacion());
             usuario1.setCargo(usuario.getCargo());
-            usuarioRepositoryJPA.save(usuario1);
-
-            response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("UPDATE SUCESSFULLY").build();
-        }else//crea un nuevo objeto
-        {
-            boolean existName =usuarioRepositoryJPA.existsUsuarioByNombreusuario(usuario.getNombreusuario());
-            if (!existName){
+            return usuarioRepositoryJPA.save(usuario1);
+        } else {
+            boolean existName = usuarioRepositoryJPA.existsUsuarioByNombreusuario(usuario.getNombreusuario());
+            if (!existName) {
                 usuario.setFechacreacion(new Date());
-                usuarioRepositoryJPA.save(usuario);
-                response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("SAVED SUCESSFULLY").build();
-            }else{
-                response= BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).message("NOT SUCESS").build();
+                return usuarioRepositoryJPA.save(usuario);
+            } else {
+                return null;
             }
         }
-
-        return response;
     }
     @Override
     public BaseResponse eliminar(Long id) {

@@ -1,7 +1,7 @@
 package newfarma.detalleventa;
 
 import jakarta.persistence.EntityNotFoundException;
-import newfarma.model.DetalleVenta;
+import newfarma.model.detalleventa;
 import newfarma.detalleventa.dto.DetalleVentaListRequest;
 import newfarma.detalleventa.dto.DetalleVentaListResponse;
 import newfarma.utils.BaseResponse;
@@ -27,7 +27,7 @@ public class DetalleVentaService implements DetalleVentaServiceI{
         int xpage = params.getXpage();
         int offset = (int) Math.ceil( (page-1) * xpage )+1;
         params.setOffset(offset-1);
-        List<DetalleVenta> l = (List<DetalleVenta>)repository.list(params,"L");
+        List<detalleventa> l = (List<detalleventa>)repository.list(params,"L");
         Long total = (Long) repository.list(params,"T");
         response = DetalleVentaListResponse.builder()
                 .page(Integer.valueOf(params.getPage().toString()))
@@ -40,7 +40,7 @@ public class DetalleVentaService implements DetalleVentaServiceI{
     @Override
     public DetalleVentaListResponse DetalleVentaListById(int id){
         DetalleVentaListResponse response;
-        List<DetalleVenta> listDetalleVenta = detalleVentaRepositoryJPA.listDetalleVentaById(id);
+        List<detalleventa> listDetalleVenta = detalleVentaRepositoryJPA.listDetalleVentaById(id);
 
         response =DetalleVentaListResponse.builder()
                 .page(listDetalleVenta.size())
@@ -51,9 +51,9 @@ public class DetalleVentaService implements DetalleVentaServiceI{
         return response;
     }
     @Override
-    public BaseResponse save(DetalleVenta detalleVenta){
+    public BaseResponse save(detalleventa detalleVenta){
         BaseResponse response;
-        DetalleVenta detalleVenta1;
+        detalleventa detalleVenta1;
         if(detalleVenta.getIddetalleventa()!=null && detalleVenta.getIddetalleventa()!=0)//actualiza un objeto existente
         {
             detalleVenta1=detalleVentaRepositoryJPA.findById(detalleVenta.getIddetalleventa()).get();
@@ -83,7 +83,7 @@ public class DetalleVentaService implements DetalleVentaServiceI{
     @Override
     public BaseResponse eliminar(Long id) {
         BaseResponse response;
-        DetalleVenta detalleVenta=detalleVentaRepositoryJPA.findById(id).orElseThrow(EntityNotFoundException::new);
+        detalleventa detalleVenta=detalleVentaRepositoryJPA.findById(id).orElseThrow(EntityNotFoundException::new);
         if (detalleVenta.getIddetalleventa()!=null)
         {
             detalleVentaRepositoryJPA.delete(detalleVenta);

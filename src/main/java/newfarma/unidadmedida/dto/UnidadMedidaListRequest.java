@@ -8,7 +8,7 @@ public class UnidadMedidaListRequest {
     Integer page;
     Integer xpage;
     Integer offset;
-    String nombre;
-    String codbarra;
-    String search;
+    String nombreunidad;
+
+    Integer idunidadmedida;
 }

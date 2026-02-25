@@ -8,5 +8,6 @@ public class PresentacionListRequest {
     Integer xpage;
     Integer offset;
     String nombre;
+    Integer idpresentacion;
 
 }

@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 public class UnidadMedida {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idunidadmedida;
+    private Integer idunidadmedida;
     private String nombreunidad;
 }

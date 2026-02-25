@@ -9,5 +9,5 @@ public interface UnidadMedidaServiceI {
 
     BaseResponse save(UnidadMedida unidadMedida);
 
-    BaseResponse eliminar(Long id);
+    BaseResponse eliminar(Integer id);
 }

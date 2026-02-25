@@ -31,7 +31,7 @@ public class CargoRepository extends BaseRepository {
         Root root = query.from(Cargo.class);
         Predicate criteriaParams = builder.conjunction();
         Predicate criteriaSearch = builder.conjunction();
-        List<String> eqFields = new ArrayList<String>() {{add("idcargo");add("nombrecargo");add("estado");}};
+        List<String> eqFields = new ArrayList<String>() {{add("idcargo");add("nombrecargo");add("descripcion");}};
         List<String> likeFields = new ArrayList<String>() {{add("idcargo");add("nombrecargo");}};
         criteriaParams = this.addCriterias(criteriaParams, builder, root, mapParam, eqFields, "eq");
         // WITH THAT IS THE LIKE

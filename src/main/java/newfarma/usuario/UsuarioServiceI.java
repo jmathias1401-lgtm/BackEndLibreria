@@ -10,7 +10,7 @@ public interface UsuarioServiceI {
 
     public UserListResponse UserListById(Long id);
 
-    BaseResponse save(Usuario usuario);
+    Usuario save(Usuario usuario);
 
     BaseResponse eliminar(Long id);
 

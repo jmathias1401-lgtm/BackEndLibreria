@@ -21,15 +21,15 @@ public class Compra {
     private Date fechacompra;
     private Double costocompra;
 
-    @ManyToOne
-    @JoinColumn(name = "proveedor_idproveedor")
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn
     private Proveedor proveedor;
 
-    @ManyToOne
-    @JoinColumn(name = "empleado_idempleado")
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn
     private Empleado empleado;
-    @ManyToOne
-    @JoinColumn(name = "tipocomprobante_idtipocomprobante")
-    private TipoComprobante tipoComprobante;
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn
+    private TipoComprobante tipocomprobante;
 
 }

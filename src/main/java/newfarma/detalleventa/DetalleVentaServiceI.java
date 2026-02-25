@@ -1,6 +1,6 @@
 package newfarma.detalleventa;
 
-import newfarma.model.DetalleVenta;
+import newfarma.model.detalleventa;
 import newfarma.detalleventa.dto.DetalleVentaListRequest;
 import newfarma.detalleventa.dto.DetalleVentaListResponse;
 import newfarma.utils.BaseResponse;
@@ -10,7 +10,7 @@ public interface DetalleVentaServiceI {
 
     public DetalleVentaListResponse DetalleVentaListById(int id);
 
-    BaseResponse save(DetalleVenta detalleVenta);
+    BaseResponse save(detalleventa detalleVenta);
 
     BaseResponse eliminar(Long id);
 

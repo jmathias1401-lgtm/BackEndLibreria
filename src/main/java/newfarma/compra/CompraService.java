@@ -48,7 +48,7 @@ public class CompraService implements CompraServiceI {
             compra1.setCostocompra(compra.getCostocompra());
             compra1.setProveedor(compra.getProveedor());
             compra1.setEmpleado(compra.getEmpleado());
-            compra1.setTipoComprobante(compra.getTipoComprobante());
+            compra1.setTipocomprobante(compra.getTipocomprobante());
             compraRepositoryJPA.save(compra1);
             response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("UPDATE SUCESSFULLY").build();
         }else//crea un nuevo objeto

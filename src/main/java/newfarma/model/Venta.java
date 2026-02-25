@@ -30,6 +30,7 @@ public class Venta {
     @ManyToOne
     @JoinColumn(name = "empleado_idempleado")
     private Empleado empleado;
+
     @ManyToOne
     @JoinColumn(name = "tipocomprobante_idtipocomprobante")
     private TipoComprobante tipoComprobante;

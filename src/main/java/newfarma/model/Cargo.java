@@ -16,7 +16,7 @@ public class Cargo {
     private Long idcargo;
     private String nombrecargo;
     private String descripcion;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "estado_idestado")
     private Estado estado;
 

@@ -1,5 +1,5 @@
 package newfarma.detalleventa;
-import newfarma.model.DetalleVenta;
+import newfarma.model.detalleventa;
 import newfarma.detalleventa.dto.DetalleVentaListRequest;
 import newfarma.detalleventa.dto.DetalleVentaListResponse;
 import newfarma.utils.BaseResponse;
@@ -30,7 +30,7 @@ public class DetalleVentaController {
 
     @PostMapping
     @ResponseBody
-    public ResponseEntity<BaseResponse> save(@RequestBody DetalleVenta detalleVenta )
+    public ResponseEntity<BaseResponse> save(@RequestBody detalleventa detalleVenta )
     {
         return new ResponseEntity(serviceI.save(detalleVenta), HttpStatus.OK);
     }

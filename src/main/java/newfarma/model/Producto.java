@@ -26,15 +26,15 @@ public class Producto {
     private Double preciocaja;
     private String codbarra;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "laboratorio_idlaboratorio")
     private Laboratorio laboratorio;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "presentacion_idpresentacion")
     private Presentacion presentacion;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "unidadmedida_idunidadmedida")
     private UnidadMedida unidadMedida;
 

@@ -28,7 +28,7 @@ public class UnidadMedidaController {
         return new ResponseEntity(serviceI.save(unidadMedida), HttpStatus.OK);
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<BaseResponse> eliminar(@PathVariable Long id){
+    public ResponseEntity<BaseResponse> eliminar(@PathVariable Integer id){
         return new ResponseEntity(serviceI.eliminar(id),HttpStatus.OK);
     }
 }

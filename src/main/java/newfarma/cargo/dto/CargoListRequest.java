@@ -8,6 +8,7 @@ public class CargoListRequest {
     Integer page;
     Integer xpage;
     Integer offset;
+    Integer idcargo;
     String nombrecargo;
     String search;
 }

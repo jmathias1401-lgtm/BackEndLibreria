@@ -1,7 +1,7 @@
 package newfarma.detallecompra.dto;
 
 import lombok.*;
-import newfarma.model.DetalleCompra;
+import newfarma.model.detallecompra;
 
 import java.util.List;
 @Getter
@@ -14,5 +14,5 @@ public class DetalleCompraListResponse {
     private Integer xpage;
     private Integer page;
     private Double lastCost;
-    private List<DetalleCompra> list;
+    private List<detallecompra> list;
 }

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DetalleCompra {
+public class detallecompra {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long iddetallecompra;
@@ -24,7 +24,7 @@ public class DetalleCompra {
     @JoinColumn(name = "compra_idcompra")
     private Compra compra;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "producto_idproducto")
     private Producto producto;
 }

@@ -1,7 +1,7 @@
 package newfarma.detallecompra;
 
 import jakarta.persistence.EntityNotFoundException;
-import newfarma.model.DetalleCompra;
+import newfarma.model.detallecompra;
 import newfarma.detallecompra.dto.DetalleCompraListRequest;
 import newfarma.detallecompra.dto.DetalleCompraListResponse;
 import newfarma.utils.BaseResponse;
@@ -27,7 +27,7 @@ public class DetalleCompraService implements DetalleCompraServiceI{
         int xpage = params.getXpage();
         int offset = (int) Math.ceil( (page-1) * xpage )+1;
         params.setOffset(offset-1);
-        List<DetalleCompra> l = (List<DetalleCompra>)repository.list(params,"L");
+        List<detallecompra> l = (List<detallecompra>)repository.list(params,"L");
         Long total = (Long) repository.list(params,"T");
         response = DetalleCompraListResponse.builder()
                 .page(Integer.valueOf(params.getPage().toString()))
@@ -40,7 +40,7 @@ public class DetalleCompraService implements DetalleCompraServiceI{
     @Override
     public DetalleCompraListResponse DetalleCompraListById(int id){
         DetalleCompraListResponse response;
-        List<DetalleCompra> listDetalleCompra = detalleCompraRepositoryJPA.listDetalleCompraById(id);
+        List<detallecompra> listDetalleCompra = detalleCompraRepositoryJPA.listDetalleCompraById(id);
 
         response =DetalleCompraListResponse.builder()
                 .page(listDetalleCompra.size())
@@ -66,9 +66,9 @@ public class DetalleCompraService implements DetalleCompraServiceI{
     }
 
     @Override
-    public BaseResponse save(DetalleCompra detalleCompra){
+    public BaseResponse save(detallecompra detalleCompra){
         BaseResponse response;
-        DetalleCompra detalleCompra1;
+        detallecompra detalleCompra1;
         if(detalleCompra.getIddetallecompra()!=null && detalleCompra.getIddetallecompra()!=0)//actualiza un objeto existente
         {
             detalleCompra1=detalleCompraRepositoryJPA.findById(detalleCompra.getIddetallecompra()).get();
@@ -96,7 +96,7 @@ public class DetalleCompraService implements DetalleCompraServiceI{
     @Override
     public BaseResponse eliminar(Long id) {
         BaseResponse response;
-        DetalleCompra detalleCompra=detalleCompraRepositoryJPA.findById(id).orElseThrow(EntityNotFoundException::new);
+        detallecompra detalleCompra=detalleCompraRepositoryJPA.findById(id).orElseThrow(EntityNotFoundException::new);
         if (detalleCompra.getIddetallecompra()!=null)
         {
             detalleCompraRepositoryJPA.delete(detalleCompra);
