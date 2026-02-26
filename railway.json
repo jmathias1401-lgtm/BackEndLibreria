@@ -6,7 +6,7 @@
   },
   "deploy": {
     "startCommand": "java -jar target/*.jar",
-    "healthcheckPath": "/api/check",
+    "healthcheckPath": "/api/check/",
     "healthcheckTimeout": 300
   }
 }
