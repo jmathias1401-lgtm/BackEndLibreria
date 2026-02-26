@@ -1,12 +1,12 @@
 {
+  "$schema": "https://schema.up.railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "chmod +x mvnw && ./mvnw clean package -DskipTests -Pproduction"
+    "buildCommand": "chmod +x mvnw && ./mvnw clean package -DskipTests"
   },
   "deploy": {
     "startCommand": "java -jar target/*.jar",
-    "healthcheckPath": "/",
-    "healthcheckTimeout": 100,
-    "restartPolicyType": "ON_FAILURE"
+    "healthcheckPath": "/api/check",
+    "healthcheckTimeout": 300
   }
 }
