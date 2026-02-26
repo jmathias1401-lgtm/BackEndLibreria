@@ -17,13 +17,14 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
+
     @Value("${secret-key}")
     private String secretKey;
 
-    @Value("${expiration}")
+    @Value("${jwt.expiration}")
     private long jwtExpiration;
 
-    @Value("${refreshexpiration}")
+    @Value("${refresh.expiration}")
     private long refreshExpiration;
 
     public String extractUsername(String token) {
@@ -52,7 +53,7 @@ public class JwtService {
         return builToken(user, refreshExpiration);
     }
 
-    private String builToken(final Usuario user, final Long expired) {
+    private String builToken(final Usuario user, final long expired) {
         return Jwts.builder()
                 .setId(user.getIdusuario().toString())
                 .setSubject(user.getNombreusuario())

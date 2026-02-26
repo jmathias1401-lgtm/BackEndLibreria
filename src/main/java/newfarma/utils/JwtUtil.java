@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Value;
 
 
 public class JwtUtil {
-	@Value("${secret-key}")
-	private String secretKey;
+	//@Value("${SECRET_KEY}")
+	//private String secretKey;
 
 	private static final String secret = "KTpZ3dXG6KdZtkmFf+pVb+=LJYTBAQgTgNB+=76dWjM5Tik=DTLn/n/Vz=Qev/S4M224ezf+pVb+=LJYTBG6KdZtkmFf+";
 	private static final long EXPIRATION_TIME = 10000 * 60 * 60 * 1; // 1 hour
