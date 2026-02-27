@@ -5,7 +5,7 @@
 #ENTRYPOINT ["java", "-jar", "app_apinewfarma.jar"]
 
 # Usar una imagen con Java 17 específicamente
-FROM maven:3.8.4-openjdk-17-slim AS build
+FROM eclipse-temurin:17-jre AS build
 
 WORKDIR /app
 
