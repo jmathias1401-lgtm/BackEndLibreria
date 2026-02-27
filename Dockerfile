@@ -26,7 +26,7 @@ COPY src src
 RUN ./mvnw clean package -DskipTests -Pproduction
 
 # Imagen final
-FROM eclipse-temurin:17-jre AS build
+FROM eclipse-temurin:17-jre
 
 WORKDIR /app
 
