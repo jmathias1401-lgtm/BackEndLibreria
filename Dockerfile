@@ -6,6 +6,22 @@
 
 # Etapa de build - NECESITA JDK para compilar
 # Etapa de build
+FROM eclipse-temurin:17-jdk-alpine AS build
+WORKDIR /app
+
+# Copiar archivos de configuración
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
+
+# Dar permisos y descargar dependencias
+RUN chmod +x mvnw
+RUN ./mvnw dependency:go-offline -B
+
+# Copiar código fuente y compilar
+COPY src src
+RUN ./mvnw clean package -DskipTests
+
 # Etapa final - con diagnóstico en consola
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
