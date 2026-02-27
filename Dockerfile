@@ -4,37 +4,36 @@
 #EXPOSE 8080
 #ENTRYPOINT ["java", "-jar", "app_apinewfarma.jar"]
 
-# Usar una imagen con Java 17 específicamente
-#ahora se cambio aqui
-FROM eclipse-temurin:17-jre AS build
-
+# Etapa de build - NECESITA JDK para compilar
+FROM eclipse-temurin:17-jdk-alpine AS build
 WORKDIR /app
 
 # Copiar archivos de configuración
-COPY pom.xml .
 COPY mvnw .
 COPY .mvn .mvn
+COPY pom.xml .
 
-# Descargar dependencias (cacheo)
+# Dar permisos y descargar dependencias
 RUN chmod +x mvnw
 RUN ./mvnw dependency:go-offline -B
 
-# Copiar código fuente
+# Copiar código fuente y compilar
 COPY src src
+RUN ./mvnw clean package -DskipTests
 
-# Compilar la aplicación
-RUN ./mvnw clean package -DskipTests -Pproduction
-
-# Imagen final
-FROM eclipse-temurin:17-jre
-
+# Etapa final - SOLO JRE necesario para ejecutar
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 # Copiar el JAR construido
 COPY --from=build /app/target/*.jar app.jar
 
-# Puerto que usará la aplicación
+# Crear usuario no root para seguridad
+RUN addgroup -S spring && adduser -S spring -G spring
+USER spring:spring
+
+# Exponer puerto
 EXPOSE 8080
 
-# Comando de inicio
-CMD ["java", "-jar", "app.jar"]
+# Ejecutar la aplicación
+ENTRYPOINT ["java", "-jar", "app.jar"]
