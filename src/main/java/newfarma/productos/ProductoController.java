@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 //@CrossOrigin(origins = "*")
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("api/producto")
 //@CrossOrigin(origins = {"http:localhost:4200","http:localhost:8000"})
 public class ProductoController {
