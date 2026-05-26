@@ -15,4 +15,6 @@ public interface DetalleVentaServiceI {
     BaseResponse eliminar(Long id);
 
     int CountDetalleVenta();
+
+    public DetalleVentaListResponse ventasMes(int mes, int anio);
 }

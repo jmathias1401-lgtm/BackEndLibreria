@@ -83,7 +83,7 @@ public class ProductoService implements ProductoServiceI{
             producto1.setPreciocaja(producto.getPreciocaja());
             producto1.setCodbarra(producto.getCodbarra());
             producto1.setPresentacion(producto.getPresentacion());
-            producto1.setUnidadMedida(producto.getUnidadMedida());
+            producto1.setUnidadmedida(producto.getUnidadmedida());
             producto1.setLaboratorio(producto.getLaboratorio());
             productoRepositoryJPA.save(producto1);
 

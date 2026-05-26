@@ -98,4 +98,16 @@ public class DetalleVentaService implements DetalleVentaServiceI{
     {
         return detalleVentaRepositoryJPA.CountDetalleVenta();
     }
+
+    @Override
+    public DetalleVentaListResponse ventasMes(int mes, int anio) {
+        List<detalleventa> listDetalleVenta = detalleVentaRepositoryJPA.ventasMes(mes,anio);
+        DetalleVentaListResponse response = DetalleVentaListResponse.builder()
+                .page(listDetalleVenta.size())
+                .total(listDetalleVenta.size())
+                .xpage(listDetalleVenta.size())
+                .list(listDetalleVenta)
+                .build();
+        return response;
+    }
 }

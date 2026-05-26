@@ -8,28 +8,27 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin
 @RestController
 @RequestMapping("api/proveedor")
 public class ProveedorController {
-    ProveedorServiceI serviceI;
+    private final ProveedorServiceI serviceI;
 
-    public ProveedorController(ProveedorServiceI serviceI){
-        this.serviceI=serviceI;
+    public ProveedorController(ProveedorServiceI serviceI) {
+        this.serviceI = serviceI;
     }
+
     @GetMapping
-    @ResponseBody
-    public ResponseEntity<ProveedorResponse> list(ProveedorListRequest params){
-        return new ResponseEntity(serviceI.list(params), HttpStatus.OK);
+    public ResponseEntity<ProveedorResponse> list(ProveedorListRequest params) {
+        return new ResponseEntity<>(serviceI.list(params), HttpStatus.OK);
     }
+
     @PostMapping
-    @ResponseBody
-    public ResponseEntity<BaseResponse> save(@RequestBody Proveedor proveedor )
-    {
-        return new ResponseEntity(serviceI.save(proveedor), HttpStatus.OK);
+    public ResponseEntity<BaseResponse> save(@RequestBody Proveedor proveedor) {
+        return new ResponseEntity<>(serviceI.save(proveedor), HttpStatus.OK);
     }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<BaseResponse> eliminar(@PathVariable Long id){
-        return new ResponseEntity(serviceI.eliminar(id),HttpStatus.OK);
+    public ResponseEntity<BaseResponse> eliminar(@PathVariable Long id) {
+        return new ResponseEntity<>(serviceI.eliminar(id), HttpStatus.OK);
     }
 }

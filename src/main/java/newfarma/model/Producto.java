@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="producto")
+@Table(name = "producto")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,6 +25,7 @@ public class Producto {
     private Double precioblister;
     private Double preciocaja;
     private String codbarra;
+    private String imagen_path;
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "laboratorio_idlaboratorio")
@@ -36,6 +37,6 @@ public class Producto {
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "unidadmedida_idunidadmedida")
-    private UnidadMedida unidadMedida;
+    private UnidadMedida unidadmedida;
 
 }
