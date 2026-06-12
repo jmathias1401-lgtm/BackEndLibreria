@@ -26,7 +26,7 @@ public class UnidadMedidaService implements UnidadMedidaServiceI {
         int xpage = params.getXpage();
         int offset = (int) Math.ceil( (page-1) * xpage )+1;
         params.setOffset(offset-1);
-        List<Laboratorio> l = (List<Laboratorio>)repository.list(params,"L");
+        List<UnidadMedida> l = (List<UnidadMedida>)repository.list(params,"L");
         Long total = (Long) repository.list(params,"T");
         response = UnidadMedidaListResponse.builder()
                 .page(Integer.valueOf(params.getPage().toString()))

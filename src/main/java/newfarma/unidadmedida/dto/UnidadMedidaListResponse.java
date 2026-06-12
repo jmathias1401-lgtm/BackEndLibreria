@@ -1,7 +1,8 @@
 package newfarma.unidadmedida.dto;
 
 import lombok.*;
-import newfarma.model.Laboratorio;
+
+import newfarma.model.UnidadMedida;
 
 import java.util.List;
 
@@ -14,5 +15,5 @@ public class UnidadMedidaListResponse {
     private Object total;
     private Integer xpage;
     private Integer page;
-    private List<Laboratorio> list;
+    private List<UnidadMedida> list;
 }

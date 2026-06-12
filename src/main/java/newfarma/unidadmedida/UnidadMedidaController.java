@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/unidadmedida")
 public class UnidadMedidaController {
     private final UnidadMedidaServiceI serviceI;
+    
 
     public UnidadMedidaController(UnidadMedidaServiceI serviceI) {
         this.serviceI = serviceI;
+       
     }
 
     @GetMapping
