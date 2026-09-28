@@ -37,33 +37,30 @@ public class SecurityConfig {
     private final TokenRepository tokenRepository;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
-    {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(req->
-                        req.requestMatchers("/api/auth/**", "/api/cargo/**","/api/check/**", "/")
-                                .permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/producto")
-                                .permitAll()
-                                .anyRequest()
-                                .authenticated()
+                .authorizeHttpRequests(req -> req.requestMatchers("/api/auth/**", "/api/cargo/**", "/api/check/**", "/")
+                        .permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/producto")
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated()
 
                 )
-                .sessionManagement(session->session.sessionCreationPolicy(STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .logout(logout->
-                logout.logoutUrl("/auth/logout")
+                .logout(logout -> logout.logoutUrl("/auth/logout")
                         .addLogoutHandler(((request, response, authentication) -> {
-                            final var authHeader=request.getHeader("Authorization");
+                            final var authHeader = request.getHeader("Authorization");
                             logout(authHeader);
                         }))
-                        .logoutSuccessHandler((request, response, authentication) ->
-                                SecurityContextHolder.clearContext())
+                        .logoutSuccessHandler(
+                                (request, response, authentication) -> SecurityContextHolder.clearContext())
 
-        );
+                );
         ;
         return http.build();
     }
@@ -72,15 +69,19 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
-            "http://localhost:52347",
-            "http://localhost:3000",
-            "http://localhost:8080",
-            "http://localhost:4200",
-            "http://localhost:63961",
-            "http://localhost:64747"
-        ));
+                "http://localhost:52347",
+                "http://localhost:3000",
+                "http://localhost:3001",
+                "http://localhost:8080",
+                "http://localhost:4200",
+                "http://localhost:63961",
+                "http://localhost:64747",
+                "http://localhost:4300",
+                "http://192.168.1.63:3000",
+                "http://192.168.1.63:4300"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
+        configuration.setAllowedHeaders(
+                Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
@@ -90,14 +91,12 @@ public class SecurityConfig {
         return source;
     }
 
-    private void logout(final String token)
-    {
-        if (token==null || !token.startsWith("Bearer "))
-        {
+    private void logout(final String token) {
+        if (token == null || !token.startsWith("Bearer ")) {
             return;
         }
-        final String jwtToken =token.substring(7);
-        final Token foundToken=tokenRepository.findByToken(jwtToken)
+        final String jwtToken = token.substring(7);
+        final Token foundToken = tokenRepository.findByToken(jwtToken)
                 .orElse(null);
         if (foundToken != null) {
             foundToken.setExpired(true);

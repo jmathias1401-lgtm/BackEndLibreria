@@ -35,7 +35,7 @@ COPY --from=build /app/target/*.jar app.jar
 # Crear script de inicio con diagnóstico en consola
 RUN echo '#!/bin/sh' > /app/start.sh && \
     echo 'echo "========================================="' >> /app/start.sh && \
-    echo 'echo "🚀 INICIANDO CONTENEDOR - $(date)"' >> /app/start.sh && \
+    echo 'echo "🚀 INICIANDO CONTENEDOR VALENTIN- $(date)"' >> /app/start.sh && \
     echo 'echo "========================================="' >> /app/start.sh && \
     echo 'echo "📂 Directorio actual: $(pwd)"' >> /app/start.sh && \
     echo 'echo "📋 Contenido del directorio:"' >> /app/start.sh && \
