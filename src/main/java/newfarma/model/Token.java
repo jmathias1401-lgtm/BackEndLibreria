@@ -1,5 +1,6 @@
 package newfarma.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,13 +8,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="token")
+@Table(name = "token")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Token {
-    public enum tokentipe{
+    public enum tokentipe {
         BEARER
     }
 
@@ -23,12 +24,13 @@ public class Token {
     @Column(unique = true)
     private String token;
     @Enumerated(EnumType.STRING)
-    public tokentipe tokenTipe= Token.tokentipe.BEARER;
+    public tokentipe tokenTipe = Token.tokentipe.BEARER;
 
     public boolean revoked;
     public boolean expired;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_idusuario")
+    @JsonIgnore
     public Usuario user;
 }

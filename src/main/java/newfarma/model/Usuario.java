@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name="usuario")
+@Table(name = "usuario")
 @Data
 @Builder
 @AllArgsConstructor
@@ -29,7 +29,11 @@ public class Usuario implements UserDetails {
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "cargo_idcargo")
     private Cargo cargo;
+    //////// para eliminacion en cascada
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Token> tokens;
 
+    ////////
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(cargo.getNombrecargo()));
