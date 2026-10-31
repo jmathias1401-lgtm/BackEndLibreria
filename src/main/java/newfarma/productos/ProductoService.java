@@ -49,133 +49,105 @@ public class ProductoService implements ProductoServiceI {
 
     @Override
     public ProductListResponse list(ProductListRequest params) {
-        ProductListResponse response;
         int page = params.getPage();
         int xpage = params.getXpage();
         int offset = (int) Math.ceil((page - 1) * xpage) + 1;
         params.setOffset(offset - 1);
         List<Producto> l = (List<Producto>) repository.list(params, "L");
         Long total = (Long) repository.list(params, "T");
-        response = ProductListResponse.builder()
+        return ProductListResponse.builder()
                 .page(Integer.valueOf(params.getPage().toString()))
                 .total(total)
                 .xpage(Integer.valueOf(params.getXpage().toString()))
                 .list(l)
                 .build();
-        return response;
     }
 
     @Override
     public ProductListResponse ProductListById(int id) {
-        ProductListResponse response;
         List<Producto> listProductos = productoRepositoryJPA.listProductosById(id);
-
-        response = ProductListResponse.builder()
+        return ProductListResponse.builder()
                 .page(listProductos.size())
                 .total(listProductos.size())
                 .xpage(listProductos.size())
                 .list(listProductos)
                 .build();
-        return response;
     }
 
     @Override
     public BaseResponse save(ProductoRequestDto producto, MultipartFile imagen) {
-        String date = producto.getVencimiento();
-        String dateParse = date;
+        String dateParse = formatearFecha(producto.getVencimiento());
+        boolean isUpdate = producto.getIdproducto() != null && producto.getIdproducto() != 0;
+        Producto productoTarget;
+
+        if (isUpdate) {
+            productoTarget = productoRepositoryJPA.findById(producto.getIdproducto())
+                    .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado con id: " + producto.getIdproducto()));
+        } else {
+            if (productoRepositoryJPA.existsProductoByCodigoproducto(producto.getCodigoproducto())) {
+                return BaseResponse.builder()
+                        .status(500)
+                        .code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR))
+                        .message("NOT SUCESS")
+                        .build();
+            }
+            productoTarget = new Producto();
+        }
+
+        mapearCamposProducto(productoTarget, producto, dateParse, imagen);
+        productoRepositoryJPA.save(productoTarget);
+
+        String mensaje = isUpdate ? "UPDATE SUCESSFULLY" : "SAVED SUCESSFULLY";
+        return BaseResponse.builder()
+                .status(200)
+                .code(String.valueOf(HttpStatus.OK))
+                .message(mensaje)
+                .build();
+    }
+
+    private void mapearCamposProducto(Producto target, ProductoRequestDto source, String dateParse, MultipartFile imagen) {
+        target.setCodigoproducto(source.getCodigoproducto());
+        target.setNombre(source.getNombre());
+        target.setVencimiento(dateParse);
+        target.setEstado(source.getEstado());
+        target.setComposicion(source.getComposicion());
+        target.setUbicacion(source.getUbicacion());
+        target.setStock(source.getStock());
+        target.setPrecioventa(source.getPrecioventa());
+        target.setPrecioblister(source.getPrecioblister());
+        target.setPreciocaja(source.getPreciocaja());
+        target.setCodbarra(source.getCodbarra());
+
+        if (source.getIdpresentacion() != null && source.getIdpresentacion() != 0) {
+            Presentacion pres = new Presentacion();
+            pres.setIdpresentacion(source.getIdpresentacion());
+            target.setPresentacion(pres);
+        }
+        if (source.getIdunidadmedida() != null && source.getIdunidadmedida() != 0) {
+            UnidadMedida um = new UnidadMedida();
+            um.setIdunidadmedida(source.getIdunidadmedida());
+            target.setUnidadmedida(um);
+        }
+        if (source.getIdlaboratorio() != null && source.getIdlaboratorio() != 0) {
+            Laboratorio lab = new Laboratorio();
+            lab.setIdlaboratorio(source.getIdlaboratorio());
+            target.setLaboratorio(lab);
+        }
+
+        String nombreImagen = guardarImagenProducto(imagen, source.getImagen_path());
+        if (nombreImagen != null) {
+            target.setImagen_path(nombreImagen);
+        }
+    }
+
+    private String formatearFecha(String date) {
         if (date != null && date.contains("-")) {
             String[] partes = date.split("-");
             if (partes.length == 3) {
-                dateParse = partes[2] + "/" + partes[1] + "/" + partes[0];
+                return partes[2] + "/" + partes[1] + "/" + partes[0];
             }
         }
-        BaseResponse response;
-        Producto producto1;
-        if (producto.getIdproducto() != null && producto.getIdproducto() != 0) { // actualiza un objeto existente
-            producto1 = productoRepositoryJPA.findById(producto.getIdproducto())
-                    .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado con id: " + producto.getIdproducto()));
-            producto1.setCodigoproducto(producto.getCodigoproducto());
-            producto1.setNombre(producto.getNombre());
-            producto1.setVencimiento(dateParse);
-            producto1.setEstado(producto.getEstado());
-            producto1.setComposicion(producto.getComposicion());
-            producto1.setUbicacion(producto.getUbicacion());
-            producto1.setStock(producto.getStock());
-            producto1.setPrecioventa(producto.getPrecioventa());
-            producto1.setPrecioblister(producto.getPrecioblister());
-            producto1.setPreciocaja(producto.getPreciocaja());
-            producto1.setCodbarra(producto.getCodbarra());
-
-            if (producto.getIdpresentacion() != null && producto.getIdpresentacion() != 0) {
-                Presentacion pres = new Presentacion();
-                pres.setIdpresentacion(producto.getIdpresentacion());
-                producto1.setPresentacion(pres);
-            }
-            if (producto.getIdunidadmedida() != null && producto.getIdunidadmedida() != 0) {
-                UnidadMedida um = new UnidadMedida();
-                um.setIdunidadmedida(producto.getIdunidadmedida());
-                producto1.setUnidadmedida(um);
-            }
-            if (producto.getIdlaboratorio() != null && producto.getIdlaboratorio() != 0) {
-                Laboratorio lab = new Laboratorio();
-                lab.setIdlaboratorio(producto.getIdlaboratorio());
-                producto1.setLaboratorio(lab);
-            }
-
-            String nombreImagen = guardarImagenProducto(imagen, producto.getImagen_path());
-            if (nombreImagen != null) {
-                producto1.setImagen_path(nombreImagen);
-            }
-
-            productoRepositoryJPA.save(producto1);
-
-            response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK))
-                    .message("UPDATE SUCESSFULLY").build();
-        } else { // crea un nuevo objeto
-            boolean existName = productoRepositoryJPA.existsProductoByCodigoproducto(producto.getCodigoproducto());
-            if (!existName) {
-                producto1 = new Producto();
-                producto1.setCodigoproducto(producto.getCodigoproducto());
-                producto1.setNombre(producto.getNombre());
-                producto1.setVencimiento(dateParse);
-                producto1.setEstado(producto.getEstado());
-                producto1.setComposicion(producto.getComposicion());
-                producto1.setUbicacion(producto.getUbicacion());
-                producto1.setStock(producto.getStock());
-                producto1.setPrecioventa(producto.getPrecioventa());
-                producto1.setPrecioblister(producto.getPrecioblister());
-                producto1.setPreciocaja(producto.getPreciocaja());
-                producto1.setCodbarra(producto.getCodbarra());
-
-                if (producto.getIdpresentacion() != null && producto.getIdpresentacion() != 0) {
-                    Presentacion pres = new Presentacion();
-                    pres.setIdpresentacion(producto.getIdpresentacion());
-                    producto1.setPresentacion(pres);
-                }
-                if (producto.getIdunidadmedida() != null && producto.getIdunidadmedida() != 0) {
-                    UnidadMedida um = new UnidadMedida();
-                    um.setIdunidadmedida(producto.getIdunidadmedida());
-                    producto1.setUnidadmedida(um);
-                }
-                if (producto.getIdlaboratorio() != null && producto.getIdlaboratorio() != 0) {
-                    Laboratorio lab = new Laboratorio();
-                    lab.setIdlaboratorio(producto.getIdlaboratorio());
-                    producto1.setLaboratorio(lab);
-                }
-
-                String nombreImagen = guardarImagenProducto(imagen, producto.getImagen_path());
-                producto1.setImagen_path(nombreImagen);
-                productoRepositoryJPA.save(producto1);
-
-                response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK))
-                        .message("SAVED SUCESSFULLY").build();
-            } else {
-                response = BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR))
-                        .message("NOT SUCESS").build();
-            }
-        }
-
-        return response;
+        return date;
     }
 
     private String guardarImagenProducto(MultipartFile imagen, String nombreImagen) {
@@ -184,11 +156,9 @@ public class ProductoService implements ProductoServiceI {
         }
 
         try {
-            // 1. Obtener y normalizar la carpeta base de almacenamiento
             Path carpetaBase = Paths.get(rutaBaseImagenes).toAbsolutePath().normalize();
             Files.createDirectories(carpetaBase);
 
-            // 2. Determinar el nombre deseado del archivo
             String nombreFinal = (nombreImagen != null && !nombreImagen.trim().isEmpty())
                     ? nombreImagen
                     : imagen.getOriginalFilename();
@@ -197,17 +167,14 @@ public class ProductoService implements ProductoServiceI {
                 nombreFinal = "producto_" + UUID.randomUUID() + ".png";
             }
 
-            // 3. Sanitizar: extraer únicamente el nombre simple del archivo eliminando cualquier directorio relativo o absoluto
             Path pathLimpio = Paths.get(nombreFinal).getFileName();
             String nombreArchivoLimpio = (pathLimpio != null) ? pathLimpio.toString() : ("img_" + UUID.randomUUID() + ".png");
 
-            // 4. Resolver y validar que la ruta normalizada resida estrictamente dentro de la carpeta base (Previene Path Traversal java:S2083)
             Path rutaArchivo = carpetaBase.resolve(nombreArchivoLimpio).normalize();
             if (!rutaArchivo.startsWith(carpetaBase)) {
                 throw new SecurityException("Intento de acceso a ruta no permitida: " + nombreImagen);
             }
 
-            // 5. Guardar la imagen de forma segura
             try (var inputStream = imagen.getInputStream()) {
                 Files.copy(inputStream, rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
             }
@@ -221,17 +188,15 @@ public class ProductoService implements ProductoServiceI {
 
     @Override
     public BaseResponse eliminar(Long id) {
-        BaseResponse response;
         Producto producto = productoRepositoryJPA.findById(id).orElseThrow(EntityNotFoundException::new);
         if (producto.getIdproducto() != null) {
             productoRepositoryJPA.delete(producto);
-            response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK))
+            return BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK))
                     .message("DELETE SUCESSFULLY").build();
         } else {
-            response = BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR))
+            return BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR))
                     .message("NOT SUCESS").build();
         }
-        return response;
     }
 
     @Override
