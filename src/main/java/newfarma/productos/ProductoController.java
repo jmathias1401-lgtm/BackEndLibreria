@@ -36,9 +36,9 @@ public class ProductoController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse> save(
-            @Valid @RequestPart("producto") ProductoRequestDto producto,
+            @Valid @RequestPart("producto") ProductoRequestDto productoDto,
             @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
-        return new ResponseEntity<>(serviceI.save(producto, imagen), HttpStatus.OK);
+        return new ResponseEntity<>(serviceI.save(productoDto, imagen), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -46,4 +46,3 @@ public class ProductoController {
         return new ResponseEntity<>(serviceI.eliminar(id), HttpStatus.OK);
     }
 }
-
