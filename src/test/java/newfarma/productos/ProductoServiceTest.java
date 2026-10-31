@@ -6,6 +6,7 @@ import newfarma.model.Producto;
 import newfarma.presentacion.PresentacionService;
 import newfarma.productos.dto.ProductListRequest;
 import newfarma.productos.dto.ProductListResponse;
+import newfarma.productos.dto.ProductoRequestDto;
 import newfarma.unidadmedida.UnidadMedidaService;
 import newfarma.utils.BaseResponse;
 import org.junit.jupiter.api.*;
@@ -60,25 +61,31 @@ class ProductoServiceTest {
     @Nested @DisplayName("save()") class SaveTests {
         @Test @DisplayName("Actualiza producto existente sin imagen")
         void save_WhenIdNotNull_ShouldUpdate() {
-            sample.setVencimiento("2025-12-31");
+            ProductoRequestDto dto = new ProductoRequestDto();
+            dto.setIdproducto(1L);
+            dto.setCodigoproducto("MED-001");
+            dto.setNombre("PARACETAMOL");
+            dto.setVencimiento("2025-12-31");
+            dto.setStock(100);
+
             when(productoRepositoryJPA.findById(1L)).thenReturn(Optional.of(sample));
             when(productoRepositoryJPA.save(any())).thenReturn(sample);
             MockMultipartFile emptyImage = new MockMultipartFile("imagen", new byte[0]);
-            assertThat(service.save(sample, emptyImage).getStatus()).isEqualTo(200);
+            assertThat(service.save(dto, emptyImage).getStatus()).isEqualTo(200);
         }
         @Test @DisplayName("Crea nuevo producto cuando codigo no existe")
         void save_WhenNewCode_ShouldCreate() {
-            Producto nuevo = new Producto();
+            ProductoRequestDto nuevo = new ProductoRequestDto();
             nuevo.setCodigoproducto("MED-002"); nuevo.setNombre("IBUPROFENO");
             nuevo.setVencimiento("2026-01-01"); nuevo.setImagen_path("img.jpg");
             when(productoRepositoryJPA.existsProductoByCodigoproducto("MED-002")).thenReturn(false);
-            when(productoRepositoryJPA.save(any())).thenReturn(nuevo);
+            when(productoRepositoryJPA.save(any())).thenReturn(sample);
             MockMultipartFile emptyImage = new MockMultipartFile("imagen", new byte[0]);
             assertThat(service.save(nuevo, emptyImage).getStatus()).isEqualTo(200);
         }
         @Test @DisplayName("Error 500 si codigo ya existe")
         void save_WhenDuplicate_ShouldReturnError() {
-            Producto dup = new Producto(); dup.setCodigoproducto("MED-001"); dup.setVencimiento("2025-12-31");
+            ProductoRequestDto dup = new ProductoRequestDto(); dup.setCodigoproducto("MED-001"); dup.setVencimiento("2025-12-31");
             when(productoRepositoryJPA.existsProductoByCodigoproducto("MED-001")).thenReturn(true);
             MockMultipartFile emptyImage = new MockMultipartFile("imagen", new byte[0]);
             assertThat(service.save(dup, emptyImage).getStatus()).isEqualTo(500);

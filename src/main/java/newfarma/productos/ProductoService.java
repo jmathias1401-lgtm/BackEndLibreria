@@ -3,10 +3,14 @@ package newfarma.productos;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import newfarma.laboratorio.LaboratorioService;
+import newfarma.model.Laboratorio;
+import newfarma.model.Presentacion;
 import newfarma.model.Producto;
+import newfarma.model.UnidadMedida;
 import newfarma.presentacion.PresentacionService;
 import newfarma.productos.dto.ProductListRequest;
 import newfarma.productos.dto.ProductListResponse;
+import newfarma.productos.dto.ProductoRequestDto;
 import newfarma.unidadmedida.UnidadMedidaService;
 import newfarma.utils.BaseResponse;
 
@@ -20,7 +24,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class ProductoService implements ProductoServiceI {
@@ -76,19 +79,23 @@ public class ProductoService implements ProductoServiceI {
     }
 
     @Override
-    public BaseResponse save(Producto producto, MultipartFile imagen) {
+    public BaseResponse save(ProductoRequestDto producto, MultipartFile imagen) {
         String date = producto.getVencimiento();
-        String[] partes = date.split("-");
-        String dateParse = partes[2] + "/" + partes[1] + "/" + partes[0];
-        producto.setVencimiento(dateParse);
+        String dateParse = date;
+        if (date != null && date.contains("-")) {
+            String[] partes = date.split("-");
+            if (partes.length == 3) {
+                dateParse = partes[2] + "/" + partes[1] + "/" + partes[0];
+            }
+        }
         BaseResponse response;
         Producto producto1;
-        if (producto.getIdproducto() != null && producto.getIdproducto() != 0)// actualiza un objeto existente
-        {
-            producto1 = productoRepositoryJPA.findById(producto.getIdproducto()).get();
+        if (producto.getIdproducto() != null && producto.getIdproducto() != 0) { // actualiza un objeto existente
+            producto1 = productoRepositoryJPA.findById(producto.getIdproducto())
+                    .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado con id: " + producto.getIdproducto()));
             producto1.setCodigoproducto(producto.getCodigoproducto());
             producto1.setNombre(producto.getNombre());
-            producto1.setVencimiento(producto.getVencimiento());
+            producto1.setVencimiento(dateParse);
             producto1.setEstado(producto.getEstado());
             producto1.setComposicion(producto.getComposicion());
             producto1.setUbicacion(producto.getUbicacion());
@@ -97,9 +104,22 @@ public class ProductoService implements ProductoServiceI {
             producto1.setPrecioblister(producto.getPrecioblister());
             producto1.setPreciocaja(producto.getPreciocaja());
             producto1.setCodbarra(producto.getCodbarra());
-            producto1.setPresentacion(producto.getPresentacion());
-            producto1.setUnidadmedida(producto.getUnidadmedida());
-            producto1.setLaboratorio(producto.getLaboratorio());
+
+            if (producto.getIdpresentacion() != null && producto.getIdpresentacion() != 0) {
+                Presentacion pres = new Presentacion();
+                pres.setIdpresentacion(producto.getIdpresentacion());
+                producto1.setPresentacion(pres);
+            }
+            if (producto.getIdunidadmedida() != null && producto.getIdunidadmedida() != 0) {
+                UnidadMedida um = new UnidadMedida();
+                um.setIdunidadmedida(producto.getIdunidadmedida());
+                producto1.setUnidadmedida(um);
+            }
+            if (producto.getIdlaboratorio() != null && producto.getIdlaboratorio() != 0) {
+                Laboratorio lab = new Laboratorio();
+                lab.setIdlaboratorio(producto.getIdlaboratorio());
+                producto1.setLaboratorio(lab);
+            }
 
             String nombreImagen = guardarImagenProducto(imagen, producto.getImagen_path());
             if (nombreImagen != null) {
@@ -110,13 +130,41 @@ public class ProductoService implements ProductoServiceI {
 
             response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK))
                     .message("UPDATE SUCESSFULLY").build();
-        } else// crea un nuevo objeto
-        {
+        } else { // crea un nuevo objeto
             boolean existName = productoRepositoryJPA.existsProductoByCodigoproducto(producto.getCodigoproducto());
             if (!existName) {
+                producto1 = new Producto();
+                producto1.setCodigoproducto(producto.getCodigoproducto());
+                producto1.setNombre(producto.getNombre());
+                producto1.setVencimiento(dateParse);
+                producto1.setEstado(producto.getEstado());
+                producto1.setComposicion(producto.getComposicion());
+                producto1.setUbicacion(producto.getUbicacion());
+                producto1.setStock(producto.getStock());
+                producto1.setPrecioventa(producto.getPrecioventa());
+                producto1.setPrecioblister(producto.getPrecioblister());
+                producto1.setPreciocaja(producto.getPreciocaja());
+                producto1.setCodbarra(producto.getCodbarra());
+
+                if (producto.getIdpresentacion() != null && producto.getIdpresentacion() != 0) {
+                    Presentacion pres = new Presentacion();
+                    pres.setIdpresentacion(producto.getIdpresentacion());
+                    producto1.setPresentacion(pres);
+                }
+                if (producto.getIdunidadmedida() != null && producto.getIdunidadmedida() != 0) {
+                    UnidadMedida um = new UnidadMedida();
+                    um.setIdunidadmedida(producto.getIdunidadmedida());
+                    producto1.setUnidadmedida(um);
+                }
+                if (producto.getIdlaboratorio() != null && producto.getIdlaboratorio() != 0) {
+                    Laboratorio lab = new Laboratorio();
+                    lab.setIdlaboratorio(producto.getIdlaboratorio());
+                    producto1.setLaboratorio(lab);
+                }
+
                 String nombreImagen = guardarImagenProducto(imagen, producto.getImagen_path());
-                producto.setImagen_path(nombreImagen);
-                productoRepositoryJPA.save(producto);
+                producto1.setImagen_path(nombreImagen);
+                productoRepositoryJPA.save(producto1);
 
                 response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK))
                         .message("SAVED SUCESSFULLY").build();
@@ -151,8 +199,6 @@ public class ProductoService implements ProductoServiceI {
             throw new RuntimeException("Error al guardar la imagen en el disco: " + e.getMessage(), e);
         }
     }
-
-   
 
     @Override
     public BaseResponse eliminar(Long id) {

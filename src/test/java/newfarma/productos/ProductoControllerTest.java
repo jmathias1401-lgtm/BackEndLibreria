@@ -6,6 +6,7 @@ import newfarma.config.SecurityConfig;
 import newfarma.model.Producto;
 import newfarma.productos.dto.ProductListRequest;
 import newfarma.productos.dto.ProductListResponse;
+import newfarma.productos.dto.ProductoRequestDto;
 import newfarma.utils.BaseResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -125,9 +126,11 @@ class ProductoControllerTest {
         @Test
         @DisplayName("Debe guardar producto con archivo de imagen y retornar HTTP 200 con BaseResponse")
         void save_WithProductAndImage_ShouldReturn200AndBaseResponse() throws Exception {
-            Producto producto = new Producto();
+            ProductoRequestDto producto = new ProductoRequestDto();
             producto.setIdproducto(1L);
             producto.setNombre("Paracetamol");
+            producto.setStock(10);
+            producto.setPrecioventa(5.0);
 
             MockMultipartFile productoPart = new MockMultipartFile(
                     "producto",
@@ -149,7 +152,7 @@ class ProductoControllerTest {
                     .message("Producto guardado exitosamente")
                     .build();
 
-            when(serviceI.save(any(Producto.class), any())).thenReturn(baseResponse);
+            when(serviceI.save(any(ProductoRequestDto.class), any())).thenReturn(baseResponse);
 
             mockMvc.perform(multipart("/api/producto")
                             .file(productoPart)
@@ -158,15 +161,17 @@ class ProductoControllerTest {
                     .andExpect(jsonPath("$.code").value("200"))
                     .andExpect(jsonPath("$.message").value("Producto guardado exitosamente"));
 
-            verify(serviceI, times(1)).save(any(Producto.class), any());
+            verify(serviceI, times(1)).save(any(ProductoRequestDto.class), any());
         }
 
         @Test
         @DisplayName("Debe guardar producto sin archivo de imagen opcional y retornar HTTP 200")
         void save_WithoutImage_ShouldReturn200AndBaseResponse() throws Exception {
-            Producto producto = new Producto();
+            ProductoRequestDto producto = new ProductoRequestDto();
             producto.setIdproducto(2L);
             producto.setNombre("Ibuprofeno");
+            producto.setStock(5);
+            producto.setPrecioventa(3.5);
 
             MockMultipartFile productoPart = new MockMultipartFile(
                     "producto",
@@ -181,14 +186,14 @@ class ProductoControllerTest {
                     .message("Producto guardado sin imagen")
                     .build();
 
-            when(serviceI.save(any(Producto.class), eq(null))).thenReturn(baseResponse);
+            when(serviceI.save(any(ProductoRequestDto.class), eq(null))).thenReturn(baseResponse);
 
             mockMvc.perform(multipart("/api/producto")
                             .file(productoPart))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.code").value("200"));
 
-            verify(serviceI, times(1)).save(any(Producto.class), eq(null));
+            verify(serviceI, times(1)).save(any(ProductoRequestDto.class), eq(null));
         }
 
         @Test

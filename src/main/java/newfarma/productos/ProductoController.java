@@ -1,8 +1,9 @@
 package newfarma.productos;
 
-import newfarma.model.Producto;
+import jakarta.validation.Valid;
 import newfarma.productos.dto.ProductListRequest;
 import newfarma.productos.dto.ProductListResponse;
+import newfarma.productos.dto.ProductoRequestDto;
 import newfarma.utils.BaseResponse;
 
 import org.springframework.http.MediaType;
@@ -35,7 +36,7 @@ public class ProductoController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BaseResponse> save(
-            @RequestPart("producto") Producto producto,
+            @Valid @RequestPart("producto") ProductoRequestDto producto,
             @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
         return new ResponseEntity<>(serviceI.save(producto, imagen), HttpStatus.OK);
     }
@@ -45,3 +46,4 @@ public class ProductoController {
         return new ResponseEntity<>(serviceI.eliminar(id), HttpStatus.OK);
     }
 }
+
