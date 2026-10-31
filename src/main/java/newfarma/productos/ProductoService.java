@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ProductoService implements ProductoServiceI {
@@ -183,17 +184,35 @@ public class ProductoService implements ProductoServiceI {
         }
 
         try {
-            // 1. Crear carpeta base utilizando los imports limpios
-            Path carpetaBase = Paths.get(rutaBaseImagenes);
+            // 1. Obtener y normalizar la carpeta base de almacenamiento
+            Path carpetaBase = Paths.get(rutaBaseImagenes).toAbsolutePath().normalize();
             Files.createDirectories(carpetaBase);
 
-            String nombreArchivo = nombreImagen;
-            Path rutaArchivo = carpetaBase.resolve(nombreArchivo);
+            // 2. Determinar el nombre deseado del archivo
+            String nombreFinal = (nombreImagen != null && !nombreImagen.trim().isEmpty())
+                    ? nombreImagen
+                    : imagen.getOriginalFilename();
+
+            if (nombreFinal == null || nombreFinal.trim().isEmpty()) {
+                nombreFinal = "producto_" + UUID.randomUUID() + ".png";
+            }
+
+            // 3. Sanitizar: extraer únicamente el nombre simple del archivo eliminando cualquier directorio relativo o absoluto
+            Path pathLimpio = Paths.get(nombreFinal).getFileName();
+            String nombreArchivoLimpio = (pathLimpio != null) ? pathLimpio.toString() : ("img_" + UUID.randomUUID() + ".png");
+
+            // 4. Resolver y validar que la ruta normalizada resida estrictamente dentro de la carpeta base (Previene Path Traversal java:S2083)
+            Path rutaArchivo = carpetaBase.resolve(nombreArchivoLimpio).normalize();
+            if (!rutaArchivo.startsWith(carpetaBase)) {
+                throw new SecurityException("Intento de acceso a ruta no permitida: " + nombreImagen);
+            }
+
+            // 5. Guardar la imagen de forma segura
             try (var inputStream = imagen.getInputStream()) {
                 Files.copy(inputStream, rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            return nombreArchivo;
+            return nombreArchivoLimpio;
 
         } catch (IOException e) {
             throw new RuntimeException("Error al guardar la imagen en el disco: " + e.getMessage(), e);

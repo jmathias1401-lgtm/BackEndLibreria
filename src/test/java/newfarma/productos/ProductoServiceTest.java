@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.util.ReflectionTestUtils;
 import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,6 +33,7 @@ class ProductoServiceTest {
     private Producto sample;
 
     @BeforeEach void setUp() {
+        ReflectionTestUtils.setField(service, "rutaBaseImagenes", "target/test-images");
         sample = new Producto();
         sample.setIdproducto(1L);
         sample.setCodigoproducto("MED-001");
@@ -89,6 +91,19 @@ class ProductoServiceTest {
             when(productoRepositoryJPA.existsProductoByCodigoproducto("MED-001")).thenReturn(true);
             MockMultipartFile emptyImage = new MockMultipartFile("imagen", new byte[0]);
             assertThat(service.save(dup, emptyImage).getStatus()).isEqualTo(500);
+        }
+        @Test @DisplayName("Guarda producto con imagen sanitizando intento de path traversal")
+        void save_WithImageAndPathTraversal_ShouldSanitizeAndSave() {
+            ProductoRequestDto nuevo = new ProductoRequestDto();
+            nuevo.setCodigoproducto("MED-003"); nuevo.setNombre("ASPIRINA");
+            nuevo.setVencimiento("2026-05-01");
+            nuevo.setImagen_path("../../etc/malicious.png");
+
+            when(productoRepositoryJPA.existsProductoByCodigoproducto("MED-003")).thenReturn(false);
+            when(productoRepositoryJPA.save(any())).thenReturn(sample);
+
+            MockMultipartFile image = new MockMultipartFile("imagen", "test.png", "image/png", "datos".getBytes());
+            assertThat(service.save(nuevo, image).getStatus()).isEqualTo(200);
         }
     }
     @Nested @DisplayName("eliminar()") class EliminarTests {
