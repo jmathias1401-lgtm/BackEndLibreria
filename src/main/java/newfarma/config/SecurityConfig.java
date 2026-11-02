@@ -41,7 +41,17 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(req -> req.requestMatchers("/api/auth/**", "/api/cargo/**", "/api/check/**", "/")
+                .authorizeHttpRequests(req -> req.requestMatchers(
+                        "/api/auth/**",
+                        "/api/cargo/**",
+                        "/api/check/**",
+                        "/",
+                        "/v3/api-docs/**",
+                        "/v3/api-docs",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/swagger-resources/**",
+                        "/webjars/**")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/producto")
                         .permitAll()
