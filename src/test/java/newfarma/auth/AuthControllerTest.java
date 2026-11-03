@@ -164,21 +164,20 @@ class AuthControllerTest {
         }
 
         @Test
-        @DisplayName("Debe propagar IllegalAccessException cuando el servicio detecta un token inválido")
-        void refreshToken_WhenServiceThrowsIllegalAccessException_ShouldPropagate() throws Exception {
+        @DisplayName("Debe retornar HTTP 401 Unauthorized cuando el servicio detecta un token inválido")
+        void refreshToken_WhenServiceThrowsIllegalAccessException_ShouldReturn401Unauthorized() throws Exception {
             // Arrange (Given)
             String authHeader = "Bearer invalid.token";
             when(authService.refreshToken(eq(authHeader)))
                     .thenThrow(new IllegalAccessException("INVALID BEARER TOKEN"));
 
             // Act & Assert (When & Then)
-            Exception exception = assertThrows(Exception.class, () ->
-                    mockMvc.perform(get("/api/auth/refresh")
+            mockMvc.perform(get("/api/auth/refresh")
                             .header(HttpHeaders.AUTHORIZATION, authHeader))
-            );
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$.status").value(401))
+                    .andExpect(jsonPath("$.message").value("INVALID BEARER TOKEN"));
 
-            assertThat(exception.getCause()).isInstanceOf(IllegalAccessException.class);
-            assertThat(exception.getCause().getMessage()).isEqualTo("INVALID BEARER TOKEN");
             verify(authService, times(1)).refreshToken(eq(authHeader));
         }
     }
