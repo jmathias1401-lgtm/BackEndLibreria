@@ -3,10 +3,10 @@ package newfarma.venta;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import newfarma.config.JwtAuthFilter;
 import newfarma.config.SecurityConfig;
-import newfarma.model.Venta;
 import newfarma.utils.BaseResponse;
 import newfarma.venta.dto.VentaListRequest;
 import newfarma.venta.dto.VentaListResponse;
+import newfarma.venta.dto.VentaRequestDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -90,10 +90,14 @@ class VentaControllerTest {
         @Test
         @DisplayName("Debe guardar venta válidamente y retornar HTTP 200 con BaseResponse")
         void save_WhenValidVenta_ShouldReturn200AndBaseResponse() throws Exception {
-            Venta venta = new Venta();
-            venta.setIdventa(1L);
-            venta.setSerie("V001");
-            venta.setCorrelativo("0000456");
+            VentaRequestDto ventaDto = VentaRequestDto.builder()
+                    .idVenta(1L)
+                    .serie("V001")
+                    .correlativo("0000456")
+                    .igv(18.0)
+                    .subtotal(100.0)
+                    .costoVenta(118.0)
+                    .build();
 
             BaseResponse baseResponse = BaseResponse.builder()
                     .code("200")
@@ -101,16 +105,16 @@ class VentaControllerTest {
                     .message("Venta guardada exitosamente")
                     .build();
 
-            when(serviceI.save(any(Venta.class))).thenReturn(baseResponse);
+            when(serviceI.save(any(VentaRequestDto.class))).thenReturn(baseResponse);
 
             mockMvc.perform(post("/api/venta")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(venta)))
+                            .content(objectMapper.writeValueAsString(ventaDto)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.code").value("200"))
                     .andExpect(jsonPath("$.message").value("Venta guardada exitosamente"));
 
-            verify(serviceI, times(1)).save(any(Venta.class));
+            verify(serviceI, times(1)).save(any(VentaRequestDto.class));
         }
 
         @Test
@@ -120,7 +124,20 @@ class VentaControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
-            verify(serviceI, never()).save(any());
+            verify(serviceI, never()).save(any(VentaRequestDto.class));
+        }
+
+        @Test
+        @DisplayName("Debe retornar HTTP 400 cuando los campos obligatorios están en blanco")
+        void save_WhenFieldsInvalid_ShouldReturn400() throws Exception {
+            VentaRequestDto invalidDto = new VentaRequestDto();
+
+            mockMvc.perform(post("/api/venta")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(invalidDto)))
+                    .andExpect(status().isBadRequest());
+
+            verify(serviceI, never()).save(any(VentaRequestDto.class));
         }
     }
 

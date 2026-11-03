@@ -3,9 +3,9 @@ package newfarma.cargo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import newfarma.cargo.dto.CargoListRequest;
 import newfarma.cargo.dto.CargoListResponse;
+import newfarma.cargo.dto.CargoRequestDto;
 import newfarma.config.JwtAuthFilter;
 import newfarma.config.SecurityConfig;
-import newfarma.model.Cargo;
 import newfarma.utils.BaseResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -53,6 +53,9 @@ class CargoControllerTest {
     @MockBean
     private CargoServiceI serviceI;
 
+    @MockBean
+    private CargoRepositoryJPA cargoRepositoryJPA;
+
     @Nested
     @DisplayName("Operación: GET /api/cargo (Listar)")
     class ListTests {
@@ -87,9 +90,10 @@ class CargoControllerTest {
         @Test
         @DisplayName("Debe guardar cargo válidamente y retornar HTTP 200 con BaseResponse")
         void save_WhenValidCargo_ShouldReturn200AndBaseResponse() throws Exception {
-            Cargo cargo = new Cargo();
-            cargo.setIdcargo(1L);
-            cargo.setNombrecargo("Farmacéutico");
+            CargoRequestDto cargo = CargoRequestDto.builder()
+                    .idCargo(1L)
+                    .nombreCargo("Farmacéutico")
+                    .build();
 
             BaseResponse baseResponse = BaseResponse.builder()
                     .code("200")
@@ -97,7 +101,7 @@ class CargoControllerTest {
                     .message("Cargo guardado exitosamente")
                     .build();
 
-            when(serviceI.save(any(Cargo.class))).thenReturn(baseResponse);
+            when(serviceI.save(any(CargoRequestDto.class))).thenReturn(baseResponse);
 
             mockMvc.perform(post("/api/cargo")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -106,7 +110,7 @@ class CargoControllerTest {
                     .andExpect(jsonPath("$.code").value("200"))
                     .andExpect(jsonPath("$.message").value("Cargo guardado exitosamente"));
 
-            verify(serviceI, times(1)).save(any(Cargo.class));
+            verify(serviceI, times(1)).save(any(CargoRequestDto.class));
         }
 
         @Test
@@ -116,7 +120,20 @@ class CargoControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
-            verify(serviceI, never()).save(any());
+            verify(serviceI, never()).save(any(CargoRequestDto.class));
+        }
+
+        @Test
+        @DisplayName("Debe retornar HTTP 400 cuando el nombre del cargo está en blanco")
+        void save_WhenNombreCargoIsBlank_ShouldReturn400BadRequest() throws Exception {
+            CargoRequestDto invalidDto = new CargoRequestDto();
+
+            mockMvc.perform(post("/api/cargo")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(invalidDto)))
+                    .andExpect(status().isBadRequest());
+
+            verify(serviceI, never()).save(any(CargoRequestDto.class));
         }
     }
 

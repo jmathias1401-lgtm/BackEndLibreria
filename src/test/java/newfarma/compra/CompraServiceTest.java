@@ -3,6 +3,7 @@ package newfarma.compra;
 import jakarta.persistence.EntityNotFoundException;
 import newfarma.compra.dto.CompraListRequest;
 import newfarma.compra.dto.CompraListResponse;
+import newfarma.compra.dto.CompraRequestDto;
 import newfarma.model.Compra;
 import newfarma.utils.BaseResponse;
 import org.junit.jupiter.api.*;
@@ -45,18 +46,27 @@ class CompraServiceTest {
             when(compraRepositoryJPA.save(any())).thenReturn(sample);
             assertThat(service.save(sample).getStatus()).isEqualTo(200);
         }
-        @Test @DisplayName("Crea nueva compra cuando correlativo-serie no existe")
+        @Test @DisplayName("Crea nueva compra cuando correlativo no existe")
         void save_WhenNew_ShouldCreate() {
             Compra nuevo = new Compra(); nuevo.setSerie("F002"); nuevo.setCorrelativo("00002");
-            when(compraRepositoryJPA.existsCompraBySerieAndAndCorrelativo(any(), any())).thenReturn(false);
+            when(compraRepositoryJPA.existsCompraByCorrelativo("00002")).thenReturn(false);
             when(compraRepositoryJPA.save(any())).thenReturn(nuevo);
             assertThat(service.save(nuevo).getStatus()).isEqualTo(200);
         }
-        @Test @DisplayName("Error 500 si correlativo-serie ya existe")
+        @Test @DisplayName("Error 500 si correlativo ya existe")
         void save_WhenDuplicate_ShouldReturnError() {
             Compra dup = new Compra(); dup.setSerie("F001"); dup.setCorrelativo("00001");
-            when(compraRepositoryJPA.existsCompraBySerieAndAndCorrelativo(any(), any())).thenReturn(true);
+            when(compraRepositoryJPA.existsCompraByCorrelativo("00001")).thenReturn(true);
             assertThat(service.save(dup).getStatus()).isEqualTo(500);
+        }
+        @Test @DisplayName("Guarda compra mediante DTO")
+        void save_WithDto_ShouldSucceed() {
+            CompraRequestDto dto = new CompraRequestDto();
+            dto.setCorrelativo("00003");
+            dto.setSerie("F003");
+            when(compraRepositoryJPA.existsCompraByCorrelativo("00003")).thenReturn(false);
+            when(compraRepositoryJPA.save(any())).thenReturn(sample);
+            assertThat(service.save(dto).getStatus()).isEqualTo(200);
         }
     }
     @Nested @DisplayName("eliminar()") class EliminarTests {

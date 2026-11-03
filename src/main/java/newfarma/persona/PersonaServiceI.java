@@ -11,4 +11,6 @@ public interface PersonaServiceI {
     BaseResponse save(Persona persona);
 
     BaseResponse eliminar(Long id);
+
+    Persona buscarPorDni(Long dni);
 }

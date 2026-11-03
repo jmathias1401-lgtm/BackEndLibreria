@@ -5,9 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface PersonaRepositoryJPA extends JpaRepository<Persona,Long> {
+public interface PersonaRepositoryJPA extends JpaRepository<Persona, Long> {
     @Query(value = "from Producto p where p.codigoproducto = ?1 ")
-    public List<Persona> findByNombre(String nombre);
-    public boolean existsPersonaByDni(Long dni);
+    List<Persona> findByNombre(String nombre);
+
+    boolean existsPersonaByDni(Long dni);
+
+    Optional<Persona> findByDni(Long dni);
 }

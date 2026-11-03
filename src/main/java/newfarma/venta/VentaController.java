@@ -1,5 +1,6 @@
 package newfarma.venta;
 
+import jakarta.validation.Valid;
 import newfarma.model.Persona;
 import newfarma.model.Venta;
 import newfarma.venta.VentaRepositoryJPA;
@@ -7,6 +8,7 @@ import newfarma.venta.VentaServiceI;
 import newfarma.utils.BaseResponse;
 import newfarma.venta.dto.VentaListRequest;
 import newfarma.venta.dto.VentaListResponse;
+import newfarma.venta.dto.VentaRequestDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,8 +30,8 @@ public class VentaController {
     }
 
     @PostMapping
-    public ResponseEntity<BaseResponse> save(@RequestBody Venta venta) {
-        return new ResponseEntity<>(serviceI.save(venta), HttpStatus.OK);
+    public ResponseEntity<BaseResponse> save(@Valid @RequestBody VentaRequestDto ventaDto) {
+        return new ResponseEntity<>(serviceI.save(ventaDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import newfarma.model.Compra;
 import newfarma.compra.dto.CompraListRequest;
 import newfarma.compra.dto.CompraListResponse;
+import newfarma.compra.dto.CompraRequestDto;
 import newfarma.utils.BaseResponse;
 import newfarma.utils.PageableUtils;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +38,20 @@ public class CompraService implements CompraServiceI {
                 .xpage(pageable.getPageSize())
                 .list(l)
                 .build();
+    }
+
+    @Override
+    public BaseResponse save(CompraRequestDto compraDto) {
+        Compra compra = new Compra();
+        compra.setIdcompra(compraDto.getIdCompra());
+        compra.setSerie(compraDto.getSerie());
+        compra.setCorrelativo(compraDto.getCorrelativo());
+        compra.setFechacompra(compraDto.getFechaCompra());
+        compra.setCostocompra(compraDto.getCostoCompra());
+        compra.setProveedor(compraDto.getProveedor());
+        compra.setEmpleado(compraDto.getEmpleado());
+        compra.setTipocomprobante(compraDto.getTipoComprobante());
+        return save(compra);
     }
 
     @Override

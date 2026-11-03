@@ -2,10 +2,11 @@ package newfarma.cliente;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import newfarma.cliente.dto.ClienteListRequest;
+import newfarma.cliente.dto.ClienteRequestDto;
 import newfarma.cliente.dto.ClienteResponse;
 import newfarma.config.JwtAuthFilter;
 import newfarma.config.SecurityConfig;
-import newfarma.model.Cliente;
+import newfarma.model.Persona;
 import newfarma.utils.BaseResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -53,6 +54,9 @@ class ClienteControllerTest {
     @MockBean
     private ClienteServiceI serviceI;
 
+    @MockBean
+    private ClienteRepositoryJPA clienteRepositoryJPA;
+
     @Nested
     @DisplayName("Operación: GET /api/cliente (Listar)")
     class ListTests {
@@ -87,8 +91,14 @@ class ClienteControllerTest {
         @Test
         @DisplayName("Debe guardar cliente válidamente y retornar HTTP 200 con BaseResponse")
         void save_WhenValidCliente_ShouldReturn200AndBaseResponse() throws Exception {
-            Cliente cliente = new Cliente();
-            cliente.setIdcliente(1L);
+            Persona persona = new Persona();
+            persona.setIdpersona(10L);
+            persona.setNombre("Juan");
+
+            ClienteRequestDto clienteDto = ClienteRequestDto.builder()
+                    .idCliente(1L)
+                    .persona(persona)
+                    .build();
 
             BaseResponse baseResponse = BaseResponse.builder()
                     .code("200")
@@ -96,16 +106,16 @@ class ClienteControllerTest {
                     .message("Cliente guardado exitosamente")
                     .build();
 
-            when(serviceI.save(any(Cliente.class))).thenReturn(baseResponse);
+            when(serviceI.save(any(ClienteRequestDto.class))).thenReturn(baseResponse);
 
             mockMvc.perform(post("/api/cliente")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(cliente)))
+                            .content(objectMapper.writeValueAsString(clienteDto)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.code").value("200"))
                     .andExpect(jsonPath("$.message").value("Cliente guardado exitosamente"));
 
-            verify(serviceI, times(1)).save(any(Cliente.class));
+            verify(serviceI, times(1)).save(any(ClienteRequestDto.class));
         }
 
         @Test
@@ -115,7 +125,20 @@ class ClienteControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
-            verify(serviceI, never()).save(any());
+            verify(serviceI, never()).save(any(ClienteRequestDto.class));
+        }
+
+        @Test
+        @DisplayName("Debe retornar HTTP 400 cuando falta la persona obligatoria")
+        void save_WhenPersonaIsMissing_ShouldReturn400BadRequest() throws Exception {
+            ClienteRequestDto invalidDto = new ClienteRequestDto();
+
+            mockMvc.perform(post("/api/cliente")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(invalidDto)))
+                    .andExpect(status().isBadRequest());
+
+            verify(serviceI, never()).save(any(ClienteRequestDto.class));
         }
     }
 

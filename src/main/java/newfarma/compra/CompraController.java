@@ -1,11 +1,10 @@
 package newfarma.compra;
 
-import newfarma.model.Compra;
-import newfarma.compra.CompraRepositoryJPA;
-import newfarma.compra.CompraServiceI;
-import newfarma.utils.BaseResponse;
+import jakarta.validation.Valid;
 import newfarma.compra.dto.CompraListRequest;
 import newfarma.compra.dto.CompraListResponse;
+import newfarma.compra.dto.CompraRequestDto;
+import newfarma.utils.BaseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +26,8 @@ public class CompraController {
     }
 
     @PostMapping
-    public ResponseEntity<BaseResponse> save(@RequestBody Compra compra) {
-        return new ResponseEntity<>(serviceI.save(compra), HttpStatus.OK);
+    public ResponseEntity<BaseResponse> save(@Valid @RequestBody CompraRequestDto compraDto) {
+        return new ResponseEntity<>(serviceI.save(compraDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

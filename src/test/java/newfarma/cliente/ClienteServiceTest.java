@@ -2,6 +2,7 @@ package newfarma.cliente;
 
 import jakarta.persistence.EntityNotFoundException;
 import newfarma.cliente.dto.ClienteListRequest;
+import newfarma.cliente.dto.ClienteRequestDto;
 import newfarma.cliente.dto.ClienteResponse;
 import newfarma.model.Cliente;
 import newfarma.model.Persona;
@@ -47,14 +48,24 @@ class ClienteServiceTest {
         void save_WhenIdNotNull_ShouldUpdate() {
             when(repositoryJPA.findById(1L)).thenReturn(Optional.of(sample));
             when(repositoryJPA.save(any())).thenReturn(sample);
-            when(ServicioPersona.save(any())).thenReturn(BaseResponse.builder().status(200).code("OK").message("ok").build());
             assertThat(service.save(sample).getStatus()).isEqualTo(200);
         }
         @Test @DisplayName("Crea nuevo cliente cuando id es nulo")
         void save_WhenIdNull_ShouldCreate() {
             Cliente nuevo = new Cliente(); nuevo.setPersona(persona);
+            when(ServicioPersona.buscarPorDni(11111111L)).thenReturn(persona);
+            when(repositoryJPA.existsClienteByPersonaId(1L)).thenReturn(false);
             when(repositoryJPA.save(any())).thenReturn(nuevo);
             assertThat(service.save(nuevo).getStatus()).isEqualTo(200);
+        }
+        @Test @DisplayName("Guarda cliente mediante DTO")
+        void save_WithDto_ShouldSucceed() {
+            ClienteRequestDto dto = new ClienteRequestDto();
+            dto.setPersona(persona);
+            when(ServicioPersona.buscarPorDni(11111111L)).thenReturn(persona);
+            when(repositoryJPA.existsClienteByPersonaId(1L)).thenReturn(false);
+            when(repositoryJPA.save(any())).thenReturn(sample);
+            assertThat(service.save(dto).getStatus()).isEqualTo(200);
         }
     }
     @Nested @DisplayName("eliminar()") class EliminarTests {

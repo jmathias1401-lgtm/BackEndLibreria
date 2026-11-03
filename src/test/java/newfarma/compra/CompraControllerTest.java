@@ -1,12 +1,12 @@
 package newfarma.compra;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import newfarma.compra.dto.CompraListRequest;
-import newfarma.compra.dto.CompraListResponse;
 import newfarma.config.JwtAuthFilter;
 import newfarma.config.SecurityConfig;
-import newfarma.model.Compra;
 import newfarma.utils.BaseResponse;
+import newfarma.compra.dto.CompraListRequest;
+import newfarma.compra.dto.CompraListResponse;
+import newfarma.compra.dto.CompraRequestDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -90,10 +90,12 @@ class CompraControllerTest {
         @Test
         @DisplayName("Debe guardar compra válidamente y retornar HTTP 200 con BaseResponse")
         void save_WhenValidCompra_ShouldReturn200AndBaseResponse() throws Exception {
-            Compra compra = new Compra();
-            compra.setIdcompra(1L);
-            compra.setSerie("C001");
-            compra.setCorrelativo("0000123");
+            CompraRequestDto compra = CompraRequestDto.builder()
+                    .idCompra(1L)
+                    .serie("C001")
+                    .correlativo("0000123")
+                    .costoCompra(250.0)
+                    .build();
 
             BaseResponse baseResponse = BaseResponse.builder()
                     .code("200")
@@ -101,7 +103,7 @@ class CompraControllerTest {
                     .message("Compra guardada exitosamente")
                     .build();
 
-            when(serviceI.save(any(Compra.class))).thenReturn(baseResponse);
+            when(serviceI.save(any(CompraRequestDto.class))).thenReturn(baseResponse);
 
             mockMvc.perform(post("/api/compra")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -110,7 +112,7 @@ class CompraControllerTest {
                     .andExpect(jsonPath("$.code").value("200"))
                     .andExpect(jsonPath("$.message").value("Compra guardada exitosamente"));
 
-            verify(serviceI, times(1)).save(any(Compra.class));
+            verify(serviceI, times(1)).save(any(CompraRequestDto.class));
         }
 
         @Test
@@ -120,7 +122,20 @@ class CompraControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
-            verify(serviceI, never()).save(any());
+            verify(serviceI, never()).save(any(CompraRequestDto.class));
+        }
+
+        @Test
+        @DisplayName("Debe retornar HTTP 400 cuando los campos obligatorios están en blanco")
+        void save_WhenFieldsInvalid_ShouldReturn400() throws Exception {
+            CompraRequestDto invalidDto = new CompraRequestDto();
+
+            mockMvc.perform(post("/api/compra")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(invalidDto)))
+                    .andExpect(status().isBadRequest());
+
+            verify(serviceI, never()).save(any(CompraRequestDto.class));
         }
     }
 

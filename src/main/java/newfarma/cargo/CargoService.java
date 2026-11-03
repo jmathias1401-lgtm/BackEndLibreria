@@ -3,6 +3,7 @@ package newfarma.cargo;
 import jakarta.persistence.EntityNotFoundException;
 import newfarma.cargo.dto.CargoListRequest;
 import newfarma.cargo.dto.CargoListResponse;
+import newfarma.cargo.dto.CargoRequestDto;
 import newfarma.model.Cargo;
 import newfarma.utils.BaseResponse;
 import newfarma.utils.PageableUtils;
@@ -37,6 +38,16 @@ public class CargoService implements CargoServiceI {
                 .xpage(pageable.getPageSize())
                 .list(l)
                 .build();
+    }
+
+    @Override
+    public BaseResponse save(CargoRequestDto cargoDto) {
+        Cargo cargo = new Cargo();
+        cargo.setIdcargo(cargoDto.getIdCargo());
+        cargo.setNombrecargo(cargoDto.getNombreCargo());
+        cargo.setDescripcion(cargoDto.getDescripcion());
+        cargo.setEstado(cargoDto.getEstado());
+        return save(cargo);
     }
 
     @Override

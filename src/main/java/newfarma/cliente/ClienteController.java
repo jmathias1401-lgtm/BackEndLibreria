@@ -1,8 +1,9 @@
 package newfarma.cliente;
 
+import jakarta.validation.Valid;
 import newfarma.cliente.dto.ClienteListRequest;
+import newfarma.cliente.dto.ClienteRequestDto;
 import newfarma.cliente.dto.ClienteResponse;
-import newfarma.model.Cliente;
 import newfarma.utils.BaseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +13,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/cliente")
 public class ClienteController {
     private final ClienteServiceI serviceI;
+    private final ClienteRepositoryJPA clienteRepositoryJPA;
 
-    public ClienteController(ClienteServiceI serviceI) {
+    public ClienteController(ClienteServiceI serviceI, ClienteRepositoryJPA clienteRepositoryJPA) {
         this.serviceI = serviceI;
+        this.clienteRepositoryJPA = clienteRepositoryJPA;
     }
 
     @GetMapping
@@ -23,8 +26,8 @@ public class ClienteController {
     }
 
     @PostMapping
-    public ResponseEntity<BaseResponse> save(@RequestBody Cliente cliente) {
-        return new ResponseEntity<>(serviceI.save(cliente), HttpStatus.OK);
+    public ResponseEntity<BaseResponse> save(@Valid @RequestBody ClienteRequestDto clienteDto) {
+        return new ResponseEntity<>(serviceI.save(clienteDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

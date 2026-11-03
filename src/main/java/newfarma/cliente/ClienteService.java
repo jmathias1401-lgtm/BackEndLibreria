@@ -2,6 +2,7 @@ package newfarma.cliente;
 
 import jakarta.persistence.EntityNotFoundException;
 import newfarma.cliente.dto.ClienteListRequest;
+import newfarma.cliente.dto.ClienteRequestDto;
 import newfarma.cliente.dto.ClienteResponse;
 import newfarma.model.Cliente;
 import newfarma.model.Persona;
@@ -41,6 +42,14 @@ public class ClienteService implements ClienteServiceI {
                 .xpage(pageable.getPageSize())
                 .list(l)
                 .build();
+    }
+
+    @Override
+    public BaseResponse save(ClienteRequestDto clienteDto) {
+        Cliente cliente = new Cliente();
+        cliente.setIdcliente(clienteDto.getIdCliente());
+        cliente.setPersona(clienteDto.getPersona());
+        return save(cliente);
     }
 
     @Override
