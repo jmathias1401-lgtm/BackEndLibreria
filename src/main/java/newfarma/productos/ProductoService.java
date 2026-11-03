@@ -13,6 +13,8 @@ import newfarma.productos.dto.ProductListResponse;
 import newfarma.productos.dto.ProductoRequestDto;
 import newfarma.unidadmedida.UnidadMedidaService;
 import newfarma.utils.BaseResponse;
+import newfarma.utils.PageableUtils;
+import org.springframework.data.domain.Pageable;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -49,16 +51,17 @@ public class ProductoService implements ProductoServiceI {
 
     @Override
     public ProductListResponse list(ProductListRequest params) {
-        int page = params.getPage();
-        int xpage = params.getXpage();
-        int offset = (int) Math.ceil((page - 1) * xpage) + 1;
-        params.setOffset(offset - 1);
+        Pageable pageable = PageableUtils.createPageable(params.getPage(), params.getXpage());
+        params.setPage(pageable.getPageNumber() + 1);
+        params.setXpage(pageable.getPageSize());
+        params.setOffset((int) pageable.getOffset());
+
         List<Producto> l = (List<Producto>) repository.list(params, "L");
         Long total = (Long) repository.list(params, "T");
         return ProductListResponse.builder()
-                .page(Integer.valueOf(params.getPage().toString()))
+                .page(pageable.getPageNumber() + 1)
                 .total(total)
-                .xpage(Integer.valueOf(params.getXpage().toString()))
+                .xpage(pageable.getPageSize())
                 .list(l)
                 .build();
     }

@@ -7,6 +7,8 @@ import newfarma.model.Venta;
 import newfarma.venta.dto.VentaListRequest;
 import newfarma.venta.dto.VentaListResponse;
 import newfarma.utils.BaseResponse;
+import newfarma.utils.PageableUtils;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -22,20 +24,19 @@ public class VentaService implements VentaServiceI {
     }
     @Override
     public VentaListResponse list(VentaListRequest params) {
-        VentaListResponse response;
-        int page = params.getPage();
-        int xpage = params.getXpage();
-        int offset = (int) Math.ceil( (page-1) * xpage )+1;
-        params.setOffset(offset-1);
-        List<Venta> l = (List<Venta>)repository.list(params,"L");
-        Long total = (Long) repository.list(params,"T");
-        response = VentaListResponse.builder()
-                .page(Integer.valueOf(params.getPage().toString()))
+        Pageable pageable = PageableUtils.createPageable(params.getPage(), params.getXpage());
+        params.setPage(pageable.getPageNumber() + 1);
+        params.setXpage(pageable.getPageSize());
+        params.setOffset((int) pageable.getOffset());
+
+        List<Venta> l = (List<Venta>) repository.list(params, "L");
+        Long total = (Long) repository.list(params, "T");
+        return VentaListResponse.builder()
+                .page(pageable.getPageNumber() + 1)
                 .total(total)
-                .xpage(Integer.valueOf(params.getXpage().toString()))
+                .xpage(pageable.getPageSize())
                 .list(l)
                 .build();
-        return response;
     }
     @Override
     public BaseResponse save(Venta venta){
