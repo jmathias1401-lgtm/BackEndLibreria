@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import newfarma.model.detallecompra;
 import newfarma.detallecompra.dto.DetalleCompraListRequest;
 import newfarma.detallecompra.dto.DetalleCompraListResponse;
+import newfarma.detallecompra.dto.DetalleCompraRequestDto;
 import newfarma.utils.BaseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -67,6 +68,21 @@ public class DetalleCompraService implements DetalleCompraServiceI {
                 .lastCost(listdetallecomprabyproductid)
                 .build();
         return response;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public BaseResponse save(DetalleCompraRequestDto dto) {
+        detallecompra entity = new detallecompra();
+        entity.setIddetallecompra(dto.getIdDetalleCompra());
+        entity.setCodigodetallecompra(dto.getCodigoDetalleCompra());
+        entity.setLote(dto.getLote());
+        entity.setUnidades(dto.getUnidades());
+        entity.setCostounidad(dto.getCostoUnidad());
+        entity.setTotal(dto.getTotal());
+        entity.setCompra(dto.getCompra());
+        entity.setProducto(dto.getProducto());
+        return save(entity);
     }
 
     @Override

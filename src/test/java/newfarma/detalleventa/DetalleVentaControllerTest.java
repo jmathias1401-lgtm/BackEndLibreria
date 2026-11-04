@@ -5,6 +5,7 @@ import newfarma.config.JwtAuthFilter;
 import newfarma.config.SecurityConfig;
 import newfarma.detalleventa.dto.DetalleVentaListRequest;
 import newfarma.detalleventa.dto.DetalleVentaListResponse;
+import newfarma.detalleventa.dto.DetalleVentaRequestDto;
 import newfarma.model.detalleventa;
 import newfarma.utils.BaseResponse;
 import org.junit.jupiter.api.DisplayName;
@@ -160,11 +161,13 @@ class DetalleVentaControllerTest {
         @Test
         @DisplayName("Debe guardar detalle de venta válidamente y retornar HTTP 200 con BaseResponse")
         void save_WhenValidDetalleVenta_ShouldReturn200AndBaseResponse() throws Exception {
-            detalleventa item = new detalleventa();
-            item.setIddetalleventa(1L);
-            item.setUnidades(2);
-            item.setCostounidad(15.0);
-            item.setTotal(30.0);
+            DetalleVentaRequestDto item = DetalleVentaRequestDto.builder()
+                    .idDetalleVenta(1L)
+                    .codigoDetalleVenta("DV001")
+                    .unidades(2)
+                    .costoUnidad(15.0)
+                    .total(30.0)
+                    .build();
 
             BaseResponse baseResponse = BaseResponse.builder()
                     .code("200")
@@ -172,7 +175,7 @@ class DetalleVentaControllerTest {
                     .message("Detalle de venta guardado exitosamente")
                     .build();
 
-            when(serviceI.save(any(detalleventa.class))).thenReturn(baseResponse);
+            when(serviceI.save(any(DetalleVentaRequestDto.class))).thenReturn(baseResponse);
 
             mockMvc.perform(post("/api/detalleventa")
                             .contentType(MediaType.APPLICATION_JSON)
@@ -181,7 +184,7 @@ class DetalleVentaControllerTest {
                     .andExpect(jsonPath("$.code").value("200"))
                     .andExpect(jsonPath("$.message").value("Detalle de venta guardado exitosamente"));
 
-            verify(serviceI, times(1)).save(any(detalleventa.class));
+            verify(serviceI, times(1)).save(any(DetalleVentaRequestDto.class));
         }
 
         @Test
@@ -191,7 +194,7 @@ class DetalleVentaControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
 
-            verify(serviceI, never()).save(any());
+            verify(serviceI, never()).save(any(DetalleVentaRequestDto.class));
         }
     }
 

@@ -3,12 +3,15 @@ package newfarma.detalleventa;
 import newfarma.model.detalleventa;
 import newfarma.detalleventa.dto.DetalleVentaListRequest;
 import newfarma.detalleventa.dto.DetalleVentaListResponse;
+import newfarma.detalleventa.dto.DetalleVentaRequestDto;
 import newfarma.utils.BaseResponse;
 
 public interface DetalleVentaServiceI {
     DetalleVentaListResponse list(DetalleVentaListRequest params);
 
-    public DetalleVentaListResponse DetalleVentaListById(int id);
+    DetalleVentaListResponse DetalleVentaListById(int id);
+
+    BaseResponse save(DetalleVentaRequestDto dto);
 
     BaseResponse save(detalleventa detalleVenta);
 
@@ -16,5 +19,5 @@ public interface DetalleVentaServiceI {
 
     int CountDetalleVenta();
 
-    public DetalleVentaListResponse ventasMes(int mes, int anio);
+    DetalleVentaListResponse ventasMes(int mes, int anio);
 }

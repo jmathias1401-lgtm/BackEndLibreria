@@ -2,9 +2,10 @@ package newfarma.detallecompra;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import newfarma.model.detallecompra;
+import jakarta.validation.Valid;
 import newfarma.detallecompra.dto.DetalleCompraListRequest;
 import newfarma.detallecompra.dto.DetalleCompraListResponse;
+import newfarma.detallecompra.dto.DetalleCompraRequestDto;
 import newfarma.utils.BaseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,8 +43,8 @@ public class DetalleCompraController {
 
     @Operation(summary = "Guardar detalle de compra", description = "Registra una línea de detalle para una orden de compra")
     @PostMapping
-    public ResponseEntity<BaseResponse> save(@RequestBody detallecompra detalleCompra) {
-        return new ResponseEntity<>(serviceI.save(detalleCompra), HttpStatus.OK);
+    public ResponseEntity<BaseResponse> save(@Valid @RequestBody DetalleCompraRequestDto detalleCompraRequestDto) {
+        return new ResponseEntity<>(serviceI.save(detalleCompraRequestDto), HttpStatus.OK);
     }
 
     @Operation(summary = "Eliminar detalle de compra", description = "Elimina una línea de detalle de compra")
