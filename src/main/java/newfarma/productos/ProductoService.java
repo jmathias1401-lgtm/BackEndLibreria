@@ -2,18 +2,22 @@ package newfarma.productos;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
+import newfarma.laboratorio.LaboratorioRepositoryJPA;
 import newfarma.laboratorio.LaboratorioService;
 import newfarma.model.Laboratorio;
 import newfarma.model.Presentacion;
 import newfarma.model.Producto;
 import newfarma.model.UnidadMedida;
+import newfarma.presentacion.PresentacionRepositoryJPA;
 import newfarma.presentacion.PresentacionService;
 import newfarma.productos.dto.ProductListRequest;
 import newfarma.productos.dto.ProductListResponse;
 import newfarma.productos.dto.ProductoRequestDto;
+import newfarma.unidadmedida.UnidadMedidaRepositoryJPA;
 import newfarma.unidadmedida.UnidadMedidaService;
 import newfarma.utils.BaseResponse;
 import newfarma.utils.PageableUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 
 import org.springframework.http.HttpStatus;
@@ -40,6 +44,15 @@ public class ProductoService implements ProductoServiceI {
     LaboratorioService laboratorioService;
     PresentacionService presentacionService;
     UnidadMedidaService unidadMedidaService;
+
+    @Autowired(required = false)
+    private LaboratorioRepositoryJPA laboratorioRepositoryJPA;
+
+    @Autowired(required = false)
+    private PresentacionRepositoryJPA presentacionRepositoryJPA;
+
+    @Autowired(required = false)
+    private UnidadMedidaRepositoryJPA unidadMedidaRepositoryJPA;
 
     public ProductoService(ProductoRepositoryJPA productoRepositoryJPA, ProductoRepository repository,
             LaboratorioService laboratorioService, PresentacionService presentacionService,
@@ -125,19 +138,31 @@ public class ProductoService implements ProductoServiceI {
         target.setCodbarra(source.getCodbarra());
 
         if (source.getIdpresentacion() != null && source.getIdpresentacion() != 0) {
-            Presentacion pres = new Presentacion();
-            pres.setIdpresentacion(source.getIdpresentacion());
-            target.setPresentacion(pres);
+            if (presentacionRepositoryJPA != null) {
+                presentacionRepositoryJPA.findById(source.getIdpresentacion()).ifPresent(target::setPresentacion);
+            } else {
+                Presentacion pres = new Presentacion();
+                pres.setIdpresentacion(source.getIdpresentacion());
+                target.setPresentacion(pres);
+            }
         }
         if (source.getIdunidadmedida() != null && source.getIdunidadmedida() != 0) {
-            UnidadMedida um = new UnidadMedida();
-            um.setIdunidadmedida(source.getIdunidadmedida());
-            target.setUnidadmedida(um);
+            if (unidadMedidaRepositoryJPA != null) {
+                unidadMedidaRepositoryJPA.findById(source.getIdunidadmedida()).ifPresent(target::setUnidadmedida);
+            } else {
+                UnidadMedida um = new UnidadMedida();
+                um.setIdunidadmedida(source.getIdunidadmedida());
+                target.setUnidadmedida(um);
+            }
         }
         if (source.getIdlaboratorio() != null && source.getIdlaboratorio() != 0) {
-            Laboratorio lab = new Laboratorio();
-            lab.setIdlaboratorio(source.getIdlaboratorio());
-            target.setLaboratorio(lab);
+            if (laboratorioRepositoryJPA != null) {
+                laboratorioRepositoryJPA.findById(source.getIdlaboratorio()).ifPresent(target::setLaboratorio);
+            } else {
+                Laboratorio lab = new Laboratorio();
+                lab.setIdlaboratorio(source.getIdlaboratorio());
+                target.setLaboratorio(lab);
+            }
         }
 
         String nombreImagen = guardarImagenProducto(imagen, source.getImagen_path());

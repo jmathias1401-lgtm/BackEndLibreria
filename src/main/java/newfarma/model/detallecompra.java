@@ -24,7 +24,7 @@ public class detallecompra {
     @JoinColumn(name = "compra_idcompra")
     private Compra compra;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     @JoinColumn(name = "producto_idproducto")
     private Producto producto;
 }

@@ -29,15 +29,15 @@ public class Producto extends AuditableEntity {
     private String codbarra;
     private String imagen_path;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     @JoinColumn(name = "laboratorio_idlaboratorio")
     private Laboratorio laboratorio;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     @JoinColumn(name = "presentacion_idpresentacion")
     private Presentacion presentacion;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     @JoinColumn(name = "unidadmedida_idunidadmedida")
     private UnidadMedida unidadmedida;
 

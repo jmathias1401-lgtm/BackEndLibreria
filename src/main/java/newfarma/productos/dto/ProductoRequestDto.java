@@ -44,25 +44,49 @@ public class ProductoRequestDto {
     private Long idpresentacion;
     private Integer idunidadmedida;
 
+    @JsonProperty("idLaboratorio")
+    public void setIdLaboratorioCamel(Long id) {
+        this.idlaboratorio = id;
+    }
+
+    @JsonProperty("idPresentacion")
+    public void setIdPresentacionCamel(Long id) {
+        this.idpresentacion = id;
+    }
+
+    @JsonProperty("idUnidadMedida")
+    public void setIdUnidadMedidaCamel(Integer id) {
+        this.idunidadmedida = id;
+    }
+
     // Métodos para compatibilidad con el JSON que envía Angular { idlaboratorio: X }
     @JsonProperty("laboratorio")
     public void unpackLaboratorio(Map<String, Object> lab) {
-        if (lab != null && lab.get("idlaboratorio") != null) {
-            this.idlaboratorio = Long.valueOf(lab.get("idlaboratorio").toString());
+        if (lab != null) {
+            Object id = lab.get("idlaboratorio") != null ? lab.get("idlaboratorio") : lab.get("idLaboratorio");
+            if (id != null) {
+                this.idlaboratorio = Long.valueOf(id.toString());
+            }
         }
     }
 
     @JsonProperty("presentacion")
     public void unpackPresentacion(Map<String, Object> pres) {
-        if (pres != null && pres.get("idpresentacion") != null) {
-            this.idpresentacion = Long.valueOf(pres.get("idpresentacion").toString());
+        if (pres != null) {
+            Object id = pres.get("idpresentacion") != null ? pres.get("idpresentacion") : pres.get("idPresentacion");
+            if (id != null) {
+                this.idpresentacion = Long.valueOf(id.toString());
+            }
         }
     }
 
     @JsonProperty("unidadmedida")
     public void unpackUnidadMedida(Map<String, Object> um) {
-        if (um != null && um.get("idunidadmedida") != null) {
-            this.idunidadmedida = Integer.valueOf(um.get("idunidadmedida").toString());
+        if (um != null) {
+            Object id = um.get("idunidadmedida") != null ? um.get("idunidadmedida") : um.get("idUnidadMedida");
+            if (id != null) {
+                this.idunidadmedida = Integer.valueOf(id.toString());
+            }
         }
     }
 }

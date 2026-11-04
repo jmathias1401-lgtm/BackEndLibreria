@@ -23,14 +23,14 @@ public class Compra extends AuditableEntity {
     private Date fechacompra;
     private Double costocompra;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     @JoinColumn
     private Proveedor proveedor;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     @JoinColumn
     private Empleado empleado;
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     @JoinColumn
     private TipoComprobante tipocomprobante;
 
