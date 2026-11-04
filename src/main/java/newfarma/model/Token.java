@@ -24,6 +24,7 @@ public class Token {
     @Column(unique = true)
     private String token;
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     public tokentipe tokenTipe = Token.tokentipe.BEARER;
 
     public boolean revoked;

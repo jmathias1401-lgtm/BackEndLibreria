@@ -3,7 +3,6 @@ package newfarma.controller;
 import newfarma.config.JwtAuthFilter;
 import newfarma.config.SecurityConfig;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -37,52 +36,42 @@ class HealthCheckControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Nested
-    @DisplayName("Operaciones de Verificación de Salud (Health Endpoints)")
-    class HealthEndpointsTests {
-
-        @Test
-        @DisplayName("GET /api/check - Debe responder HTTP 200 con cuerpo 'OK'")
-        void check_ShouldReturn200AndOkString() throws Exception {
-            mockMvc.perform(get("/api/check"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().string("OK"));
-        }
-
-        @Test
-        @DisplayName("GET /api/check/health - Debe responder HTTP 200 con cuerpo 'OK'")
-        void health_ShouldReturn200AndOkString() throws Exception {
-            mockMvc.perform(get("/api/check/health"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().string("OK"));
-        }
-
-        @Test
-        @DisplayName("GET /api/check/healthcheck - Debe responder HTTP 200 con cuerpo 'OK'")
-        void healthcheck_ShouldReturn200AndOkString() throws Exception {
-            mockMvc.perform(get("/api/check/healthcheck"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().string("OK"));
-        }
-
-        @Test
-        @DisplayName("GET /api/check/ - Debe responder HTTP 200 con mensaje de funcionamiento")
-        void root_ShouldReturn200AndStatusMessage() throws Exception {
-            mockMvc.perform(get("/api/check/"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().string("API funcionando correctamente"));
-        }
+    @Test
+    @DisplayName("GET /api/check - Debe responder HTTP 200 con cuerpo 'OK'")
+    void check_ShouldReturn200AndOkString() throws Exception {
+        mockMvc.perform(get("/api/check"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("OK"));
     }
 
-    @Nested
-    @DisplayName("Validación de Métodos HTTP no permitidos")
-    class MethodNotAllowedTests {
+    @Test
+    @DisplayName("GET /api/check/health - Debe responder HTTP 200 con cuerpo 'OK'")
+    void health_ShouldReturn200AndOkString() throws Exception {
+        mockMvc.perform(get("/api/check/health"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("OK"));
+    }
 
-        @Test
-        @DisplayName("POST /api/check - Debe rechazar con HTTP 405 Method Not Allowed")
-        void check_WhenPostMethod_ShouldReturn405MethodNotAllowed() throws Exception {
-            mockMvc.perform(post("/api/check"))
-                    .andExpect(status().isMethodNotAllowed());
-        }
+    @Test
+    @DisplayName("GET /api/check/healthcheck - Debe responder HTTP 200 con cuerpo 'OK'")
+    void healthcheck_ShouldReturn200AndOkString() throws Exception {
+        mockMvc.perform(get("/api/check/healthcheck"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("OK"));
+    }
+
+    @Test
+    @DisplayName("GET /api/check/ - Debe responder HTTP 200 con mensaje de funcionamiento")
+    void root_ShouldReturn200AndStatusMessage() throws Exception {
+        mockMvc.perform(get("/api/check/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("API funcionando correctamente"));
+    }
+
+    @Test
+    @DisplayName("POST /api/check - Debe rechazar con HTTP 405 Method Not Allowed")
+    void check_WhenPostMethod_ShouldReturn405MethodNotAllowed() throws Exception {
+        mockMvc.perform(post("/api/check"))
+                .andExpect(status().isMethodNotAllowed());
     }
 }
