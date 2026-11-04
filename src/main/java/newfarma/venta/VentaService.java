@@ -12,10 +12,12 @@ import newfarma.utils.PageableUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class VentaService implements VentaServiceI {
     private final ventaRepository repository;
     VentaRepositoryJPA ventaRepositoryJPA;
@@ -43,6 +45,7 @@ public class VentaService implements VentaServiceI {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResponse save(VentaRequestDto ventaDto) {
         Venta venta = new Venta();
         venta.setIdventa(ventaDto.getIdVenta());
@@ -59,6 +62,7 @@ public class VentaService implements VentaServiceI {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResponse save(Venta venta){
         BaseResponse response;
         Venta venta1;
@@ -94,6 +98,7 @@ public class VentaService implements VentaServiceI {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResponse eliminar(Long id) {
         BaseResponse response;
         Venta venta = ventaRepositoryJPA.findById(id).orElseThrow(EntityNotFoundException::new);

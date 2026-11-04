@@ -7,10 +7,12 @@ import newfarma.model.Empleado;
 import newfarma.utils.BaseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class EmpleadoService implements EmpleadoServiceI {
     private final EmpleadoRepository repository;
     private final EmpleadoRepositoryJPA repositoryJPA;
@@ -39,11 +41,11 @@ public class EmpleadoService implements EmpleadoServiceI {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResponse save(Empleado empleado) {
         BaseResponse response;
         Empleado empleado1;
-        if (empleado.getIdempleado() != null)//actualiza un objeto existente
-        {
+        if (empleado.getIdempleado() != null) {
             empleado1 = repositoryJPA.findById(empleado.getIdempleado()).get();
             empleado1.setEstado(empleado.getEstado());
             empleado1.setPersona(empleado.getPersona());
@@ -51,8 +53,7 @@ public class EmpleadoService implements EmpleadoServiceI {
             repositoryJPA.save(empleado1);
 
             response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("UPDATE SUCESSFULLY").build();
-        } else//crea un nuevo objeto
-        {
+        } else {
             repositoryJPA.save(empleado);
             response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("SAVED SUCESSFULLY").build();
         }
@@ -61,6 +62,7 @@ public class EmpleadoService implements EmpleadoServiceI {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResponse eliminar(Long id) {
         BaseResponse response;
         Empleado empleado = repositoryJPA.findById(id).orElseThrow(EntityNotFoundException::new);

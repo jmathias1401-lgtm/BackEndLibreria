@@ -13,11 +13,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(rollbackFor = Exception.class)
 public class AuthService {
     private final UsuarioService usuarioService;
     private final TokenRepository tokenRepository;
@@ -25,10 +27,10 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final UsuarioRepositoryJPA usuarioRepositoryJPA;
-    public TokenResponse register(Usuario usuario)
-    {
-        var user=new Usuario();
-        if (usuario.getIdusuario()!=null){
+
+    public TokenResponse register(Usuario usuario) {
+        var user = new Usuario();
+        if (usuario.getIdusuario() != null) {
             user = Usuario.builder()
                     .idusuario(usuario.getIdusuario())
                     .nombreusuario(usuario.getNombreusuario())
@@ -36,8 +38,7 @@ public class AuthService {
                     .fechacreacion(usuario.getFechacreacion())
                     .cargo(usuario.getCargo())
                     .build();
-        }
-        else {
+        } else {
             user = Usuario.builder()
                     .nombreusuario(usuario.getNombreusuario())
                     .clave(passwordEncoder.encode(usuario.getPassword()))

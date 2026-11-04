@@ -7,17 +7,20 @@ import newfarma.detallecompra.dto.DetalleCompraListResponse;
 import newfarma.utils.BaseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-public class DetalleCompraService implements DetalleCompraServiceI{
+@Transactional(readOnly = true)
+public class DetalleCompraService implements DetalleCompraServiceI {
 
     private final DetalleCompraRepository repository;
     DetalleCompraRepositoryJPA detalleCompraRepositoryJPA;
-    public DetalleCompraService(DetalleCompraRepositoryJPA detalleCompraRepositoryJPA,DetalleCompraRepository repository){
-        this.detalleCompraRepositoryJPA=detalleCompraRepositoryJPA;
-        this.repository=repository;
+
+    public DetalleCompraService(DetalleCompraRepositoryJPA detalleCompraRepositoryJPA, DetalleCompraRepository repository) {
+        this.detalleCompraRepositoryJPA = detalleCompraRepositoryJPA;
+        this.repository = repository;
     }
 
     @Override
@@ -25,10 +28,10 @@ public class DetalleCompraService implements DetalleCompraServiceI{
         DetalleCompraListResponse response;
         int page = params.getPage();
         int xpage = params.getXpage();
-        int offset = (int) Math.ceil( (page-1) * xpage )+1;
-        params.setOffset(offset-1);
-        List<detallecompra> l = (List<detallecompra>)repository.list(params,"L");
-        Long total = (Long) repository.list(params,"T");
+        int offset = (int) Math.ceil((page - 1) * xpage) + 1;
+        params.setOffset(offset - 1);
+        List<detallecompra> l = (List<detallecompra>) repository.list(params, "L");
+        Long total = (Long) repository.list(params, "T");
         response = DetalleCompraListResponse.builder()
                 .page(Integer.valueOf(params.getPage().toString()))
                 .total(total)
@@ -37,12 +40,13 @@ public class DetalleCompraService implements DetalleCompraServiceI{
                 .build();
         return response;
     }
+
     @Override
-    public DetalleCompraListResponse DetalleCompraListById(int id){
+    public DetalleCompraListResponse DetalleCompraListById(int id) {
         DetalleCompraListResponse response;
         List<detallecompra> listDetalleCompra = detalleCompraRepositoryJPA.listDetalleCompraById(id);
 
-        response =DetalleCompraListResponse.builder()
+        response = DetalleCompraListResponse.builder()
                 .page(listDetalleCompra.size())
                 .total(listDetalleCompra.size())
                 .xpage(listDetalleCompra.size())
@@ -52,11 +56,11 @@ public class DetalleCompraService implements DetalleCompraServiceI{
     }
 
     @Override
-    public DetalleCompraListResponse listDetalleCompraByProductoId(int id){
+    public DetalleCompraListResponse listDetalleCompraByProductoId(int id) {
         DetalleCompraListResponse response;
-        Double listdetallecomprabyproductid=detalleCompraRepositoryJPA.listDetalleCompraByProductoId(id);
+        Double listdetallecomprabyproductid = detalleCompraRepositoryJPA.listDetalleCompraByProductoId(id);
 
-        response =DetalleCompraListResponse.builder()
+        response = DetalleCompraListResponse.builder()
                 .page(0)
                 .total(0)
                 .xpage(0)
@@ -66,12 +70,12 @@ public class DetalleCompraService implements DetalleCompraServiceI{
     }
 
     @Override
-    public BaseResponse save(detallecompra detalleCompra){
+    @Transactional(rollbackFor = Exception.class)
+    public BaseResponse save(detallecompra detalleCompra) {
         BaseResponse response;
         detallecompra detalleCompra1;
-        if(detalleCompra.getIddetallecompra()!=null && detalleCompra.getIddetallecompra()!=0)//actualiza un objeto existente
-        {
-            detalleCompra1=detalleCompraRepositoryJPA.findById(detalleCompra.getIddetallecompra()).get();
+        if (detalleCompra.getIddetallecompra() != null && detalleCompra.getIddetallecompra() != 0) {
+            detalleCompra1 = detalleCompraRepositoryJPA.findById(detalleCompra.getIddetallecompra()).get();
             detalleCompra1.setCodigodetallecompra(detalleCompra.getCodigodetallecompra());
             detalleCompra1.setUnidades(detalleCompra.getUnidades());
             detalleCompra1.setCostounidad(detalleCompra.getCostounidad());
@@ -79,36 +83,36 @@ public class DetalleCompraService implements DetalleCompraServiceI{
             detalleCompra1.setCompra(detalleCompra.getCompra());
             detalleCompra1.setProducto(detalleCompra.getProducto());
             detalleCompraRepositoryJPA.save(detalleCompra1);
-            response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("UPDATE SUCESSFULLY").build();
-        }else//crea un nuevo objeto
-        {
-            boolean existCode =detalleCompraRepositoryJPA.existsDetalleCompraByCodigodetallecompra(detalleCompra.getCodigodetallecompra());
-            if (!existCode){
+            response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("UPDATE SUCESSFULLY").build();
+        } else {
+            boolean existCode = detalleCompraRepositoryJPA.existsDetalleCompraByCodigodetallecompra(detalleCompra.getCodigodetallecompra());
+            if (!existCode) {
                 detalleCompraRepositoryJPA.save(detalleCompra);
-                response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("SAVED SUCESSFULLY").build();
-            }else{
-                response= BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).message("NOT SAVED BY CODIGODETALLECOMPRA EXIST IN DB ").build();
+                response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("SAVED SUCESSFULLY").build();
+            } else {
+                response = BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).message("NOT SAVED BY CODIGODETALLECOMPRA EXIST IN DB ").build();
             }
         }
 
         return response;
     }
+
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResponse eliminar(Long id) {
         BaseResponse response;
-        detallecompra detalleCompra=detalleCompraRepositoryJPA.findById(id).orElseThrow(EntityNotFoundException::new);
-        if (detalleCompra.getIddetallecompra()!=null)
-        {
+        detallecompra detalleCompra = detalleCompraRepositoryJPA.findById(id).orElseThrow(EntityNotFoundException::new);
+        if (detalleCompra.getIddetallecompra() != null) {
             detalleCompraRepositoryJPA.delete(detalleCompra);
-            response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("DELETE SUCESSFULLY").build();
-        }else {
-            response= BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).message("NOT SUCESS").build();
+            response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("DELETE SUCESSFULLY").build();
+        } else {
+            response = BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).message("NOT SUCESS").build();
         }
         return response;
     }
+
     @Override
-    public int CountDetalleCompra()
-    {
+    public int CountDetalleCompra() {
         return detalleCompraRepositoryJPA.CountDetalleCompra();
     }
 }

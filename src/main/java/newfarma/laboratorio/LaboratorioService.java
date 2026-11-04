@@ -7,9 +7,12 @@ import newfarma.model.Laboratorio;
 import newfarma.utils.BaseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class LaboratorioService implements LaboratorioServiceI {
     private final LaboratorioRepository repository;
     private final LaboratorioRepositoryJPA repositoryJPA;
@@ -38,19 +41,17 @@ public class LaboratorioService implements LaboratorioServiceI {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResponse save(Laboratorio laboratorio) {
         BaseResponse response;
         Laboratorio laboratorio1;
-        if (laboratorio.getIdlaboratorio() != null && laboratorio.getIdlaboratorio() != 0)// actualiza un objeto
-                                                                                          // existente
-        {
+        if (laboratorio.getIdlaboratorio() != null && laboratorio.getIdlaboratorio() != 0) {
             laboratorio1 = repositoryJPA.findById(laboratorio.getIdlaboratorio()).get();
             laboratorio1.setNombrelaboratorio(laboratorio.getNombrelaboratorio());
             repositoryJPA.save(laboratorio1);
             response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK))
                     .message("UPDATE SUCESSFULLY").build();
-        } else// crea un nuevo objeto
-        {
+        } else {
             boolean existName = repositoryJPA.existsLaboratorioByNombrelaboratorio(laboratorio.getNombrelaboratorio());
             if (!existName) {
                 repositoryJPA.save(laboratorio);
@@ -66,6 +67,7 @@ public class LaboratorioService implements LaboratorioServiceI {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResponse eliminar(Long id) {
         BaseResponse response;
         Laboratorio laboratorio = repositoryJPA.findById(id).orElseThrow(EntityNotFoundException::new);

@@ -4,33 +4,36 @@ import jakarta.persistence.EntityNotFoundException;
 import newfarma.persona.PersonaService;
 import newfarma.proveedor.dto.ProveedorListRequest;
 import newfarma.proveedor.dto.ProveedorResponse;
-
 import newfarma.model.Proveedor;
 import newfarma.utils.BaseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
 @Service
+@Transactional(readOnly = true)
 public class ProveedorService implements ProveedorServiceI {
     private final ProveedorRepository repository;
     private final ProveedorRepositoryJPA repositoryJPA;
     private final PersonaService ServicioPersona;
-    public ProveedorService(ProveedorRepository repository, ProveedorRepositoryJPA repositoryJPA,PersonaService ServicioPersona ){
-        this.repository=repository;
-        this.repositoryJPA=repositoryJPA;
-        this.ServicioPersona =ServicioPersona;
+
+    public ProveedorService(ProveedorRepository repository, ProveedorRepositoryJPA repositoryJPA, PersonaService ServicioPersona) {
+        this.repository = repository;
+        this.repositoryJPA = repositoryJPA;
+        this.ServicioPersona = ServicioPersona;
     }
+
     @Override
     public ProveedorResponse list(ProveedorListRequest params) {
         ProveedorResponse response;
-
         int page = params.getPage();
         int xpage = params.getXpage();
-        int offset = (int) Math.ceil( (page-1) * xpage )+1;
-        params.setOffset(offset-1);
-        List<Proveedor> l = (List<Proveedor>)repository.list(params,"L");
-        Long total = (Long) repository.list(params,"T");
+        int offset = (int) Math.ceil((page - 1) * xpage) + 1;
+        params.setOffset(offset - 1);
+        List<Proveedor> l = (List<Proveedor>) repository.list(params, "L");
+        Long total = (Long) repository.list(params, "T");
         response = ProveedorResponse.builder()
                 .page(Integer.valueOf(params.getPage().toString()))
                 .total(total)
@@ -39,35 +42,36 @@ public class ProveedorService implements ProveedorServiceI {
                 .build();
         return response;
     }
+
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResponse save(Proveedor proveedor) {
         BaseResponse response;
         Proveedor proveedor1;
-        if(proveedor.getIdproveedor()!=null)//actualiza un objeto existente
-        {
-            proveedor1=repositoryJPA.findById(proveedor.getIdproveedor()).get();
+        if (proveedor.getIdproveedor() != null) {
+            proveedor1 = repositoryJPA.findById(proveedor.getIdproveedor()).get();
             proveedor1.setPersona(proveedor.getPersona());
             repositoryJPA.save(proveedor1);
             ServicioPersona.save(proveedor.getPersona());
-            response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("UPDATE SUCESSFULLY").build();
-        }else//crea un nuevo objeto
-        {
+            response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("UPDATE SUCESSFULLY").build();
+        } else {
             repositoryJPA.save(proveedor);
-            response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("SAVED SUCESSFULLY").build();
+            response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("SAVED SUCESSFULLY").build();
         }
 
         return response;
     }
+
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResponse eliminar(Long id) {
         BaseResponse response;
-        Proveedor proveedor=repositoryJPA.findById(id).orElseThrow(EntityNotFoundException::new);
-        if (proveedor.getIdproveedor()!=null)
-        {
+        Proveedor proveedor = repositoryJPA.findById(id).orElseThrow(EntityNotFoundException::new);
+        if (proveedor.getIdproveedor() != null) {
             repositoryJPA.delete(proveedor);
-            response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("DELETE SUCESSFULLY").build();
-        }else {
-            response= BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).message("NOT SUCESS").build();
+            response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("DELETE SUCESSFULLY").build();
+        } else {
+            response = BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).message("NOT SUCESS").build();
         }
         return response;
     }

@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional(readOnly = true)
 public class ProductoService implements ProductoServiceI {
     @Value("${app.ruta-imagenes}")
     private String rutaBaseImagenes;
@@ -78,6 +80,7 @@ public class ProductoService implements ProductoServiceI {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResponse save(ProductoRequestDto producto, MultipartFile imagen) {
         String dateParse = formatearFecha(producto.getVencimiento());
         boolean isUpdate = producto.getIdproducto() != null && producto.getIdproducto() != 0;
@@ -190,6 +193,7 @@ public class ProductoService implements ProductoServiceI {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResponse eliminar(Long id) {
         Producto producto = productoRepositoryJPA.findById(id).orElseThrow(EntityNotFoundException::new);
         if (producto.getIdproducto() != null) {

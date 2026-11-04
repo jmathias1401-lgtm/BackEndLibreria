@@ -7,18 +7,20 @@ import newfarma.empresa.dto.EmpresaListResponse;
 import newfarma.utils.BaseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-public class EmpresaService implements EmpresaServiceI{
+@Transactional(readOnly = true)
+public class EmpresaService implements EmpresaServiceI {
 
     private final EmpresaRepository repository;
     EmpresaRepositoryJPA empresaRepositoryJPA;
 
-    public EmpresaService(EmpresaRepositoryJPA empresaRepositoryJPA,EmpresaRepository repository){
-        this.empresaRepositoryJPA=empresaRepositoryJPA;
-        this.repository=repository;
+    public EmpresaService(EmpresaRepositoryJPA empresaRepositoryJPA, EmpresaRepository repository) {
+        this.empresaRepositoryJPA = empresaRepositoryJPA;
+        this.repository = repository;
     }
 
     @Override
@@ -26,10 +28,10 @@ public class EmpresaService implements EmpresaServiceI{
         EmpresaListResponse response;
         int page = params.getPage();
         int xpage = params.getXpage();
-        int offset = (int) Math.ceil( (page-1) * xpage )+1;
-        params.setOffset(offset-1);
-        List<empresa> l = (List<empresa>)repository.list(params,"L");
-        Long total = (Long) repository.list(params,"T");
+        int offset = (int) Math.ceil((page - 1) * xpage) + 1;
+        params.setOffset(offset - 1);
+        List<empresa> l = (List<empresa>) repository.list(params, "L");
+        Long total = (Long) repository.list(params, "T");
         response = EmpresaListResponse.builder()
                 .page(Integer.valueOf(params.getPage().toString()))
                 .total(total)
@@ -38,12 +40,13 @@ public class EmpresaService implements EmpresaServiceI{
                 .build();
         return response;
     }
+
     @Override
-    public EmpresaListResponse EmpresaListById(Long id){
+    public EmpresaListResponse EmpresaListById(Long id) {
         EmpresaListResponse response;
         List<empresa> listEmpresas = empresaRepositoryJPA.listEmpresasById(id);
 
-        response =EmpresaListResponse.builder()
+        response = EmpresaListResponse.builder()
                 .page(listEmpresas.size())
                 .total(listEmpresas.size())
                 .xpage(listEmpresas.size())
@@ -51,13 +54,14 @@ public class EmpresaService implements EmpresaServiceI{
                 .build();
         return response;
     }
+
     @Override
-    public BaseResponse save(empresa empresa){
+    @Transactional(rollbackFor = Exception.class)
+    public BaseResponse save(empresa empresa) {
         BaseResponse response;
         empresa empresa1;
-        if(empresa.getIdempresa()!=null && empresa.getIdempresa()!=0)//actualiza un objeto existente
-        {
-            empresa1=empresaRepositoryJPA.findById(empresa.getIdempresa()).get();
+        if (empresa.getIdempresa() != null && empresa.getIdempresa() != 0) {
+            empresa1 = empresaRepositoryJPA.findById(empresa.getIdempresa()).get();
             empresa1.setNombre(empresa.getNombre());
             empresa1.setDireccion(empresa.getDireccion());
             empresa1.setPaginaweb(empresa.getPaginaweb());
@@ -68,36 +72,36 @@ public class EmpresaService implements EmpresaServiceI{
             empresa1.setInfo3(empresa.getInfo3());
             empresaRepositoryJPA.save(empresa1);
 
-            response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("UPDATE SUCESSFULLY").build();
-        }else//crea un nuevo objeto
-        {
-            boolean existName =empresaRepositoryJPA.existsEmpresaByNombre(empresa.getNombre());
-            if (!existName){
+            response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("UPDATE SUCESSFULLY").build();
+        } else {
+            boolean existName = empresaRepositoryJPA.existsEmpresaByNombre(empresa.getNombre());
+            if (!existName) {
                 empresaRepositoryJPA.save(empresa);
-                response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("SAVED SUCESSFULLY").build();
-            }else{
-                response= BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).message("NOT SUCESS").build();
+                response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("SAVED SUCESSFULLY").build();
+            } else {
+                response = BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).message("NOT SUCESS").build();
             }
         }
 
         return response;
     }
+
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResponse eliminar(Long id) {
         BaseResponse response;
-        empresa empresa=empresaRepositoryJPA.findById(id).orElseThrow(EntityNotFoundException::new);
-        if (empresa.getIdempresa()!=null)
-        {
+        empresa empresa = empresaRepositoryJPA.findById(id).orElseThrow(EntityNotFoundException::new);
+        if (empresa.getIdempresa() != null) {
             empresaRepositoryJPA.delete(empresa);
-            response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("DELETE SUCESSFULLY").build();
-        }else {
-            response= BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).message("NOT SUCESS").build();
+            response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("DELETE SUCESSFULLY").build();
+        } else {
+            response = BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).message("NOT SUCESS").build();
         }
         return response;
     }
+
     @Override
-    public int CountEmpresa()
-    {
+    public int CountEmpresa() {
         return empresaRepositoryJPA.CountEmpresa();
     }
 }

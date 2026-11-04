@@ -3,31 +3,34 @@ package newfarma.pedido;
 import jakarta.persistence.EntityNotFoundException;
 import newfarma.pedido.dto.PedidoListRequest;
 import newfarma.pedido.dto.PedidoListResponse;
-
 import newfarma.model.Pedido;
 import newfarma.utils.BaseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
 @Service
+@Transactional(readOnly = true)
 public class PedidoService implements PedidoServiceI {
     private final PedidoRepository repository;
     private final PedidoRepositoryJPA repositoryJPA;
-    public PedidoService(PedidoRepository repository, PedidoRepositoryJPA repositoryJPA){
-        this.repository=repository;
-        this.repositoryJPA=repositoryJPA;
+
+    public PedidoService(PedidoRepository repository, PedidoRepositoryJPA repositoryJPA) {
+        this.repository = repository;
+        this.repositoryJPA = repositoryJPA;
     }
+
     @Override
     public PedidoListResponse list(PedidoListRequest params) {
         PedidoListResponse response;
-
         int page = params.getPage();
         int xpage = params.getXpage();
-        int offset = (int) Math.ceil( (page-1) * xpage )+1;
-        params.setOffset(offset-1);
-        List<Pedido> l = (List<Pedido>)repository.list(params,"L");
-        Long total = (Long) repository.list(params,"T");
+        int offset = (int) Math.ceil((page - 1) * xpage) + 1;
+        params.setOffset(offset - 1);
+        List<Pedido> l = (List<Pedido>) repository.list(params, "L");
+        Long total = (Long) repository.list(params, "T");
         response = PedidoListResponse.builder()
                 .page(Integer.valueOf(params.getPage().toString()))
                 .total(total)
@@ -36,44 +39,45 @@ public class PedidoService implements PedidoServiceI {
                 .build();
         return response;
     }
+
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResponse save(Pedido pedido) {
         BaseResponse response;
         Pedido pedido1;
-        if(pedido.getIdpedido()!=null)//actualiza un objeto existente
-        {
-            pedido1=repositoryJPA.findById(pedido.getIdpedido()).get();
+        if (pedido.getIdpedido() != null) {
+            pedido1 = repositoryJPA.findById(pedido.getIdpedido()).get();
             pedido1.setFechapedido(pedido.getFechapedido());
             pedido1.setEstado(pedido.getEstado());
             pedido1.setCliente(pedido.getCliente());
             pedido1.setProducto(pedido.getProducto());
             pedido1.setCodigopedido(pedido.getCodigopedido());
             repositoryJPA.save(pedido1);
-            response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("UPDATE SUCESSFULLY").build();
-        }else//crea un nuevo objeto
-        {
+            response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("UPDATE SUCESSFULLY").build();
+        } else {
             repositoryJPA.save(pedido);
-            response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("SAVED SUCESSFULLY").build();
+            response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("SAVED SUCESSFULLY").build();
         }
 
         return response;
     }
+
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResponse eliminar(Long id) {
         BaseResponse response;
-        Pedido pedido=repositoryJPA.findById(id).orElseThrow(EntityNotFoundException::new);
-        if (pedido.getIdpedido()!=null)
-        {
+        Pedido pedido = repositoryJPA.findById(id).orElseThrow(EntityNotFoundException::new);
+        if (pedido.getIdpedido() != null) {
             repositoryJPA.delete(pedido);
-            response= BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("DELETE SUCESSFULLY").build();
-        }else {
-            response= BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).message("NOT SUCESS").build();
+            response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("DELETE SUCESSFULLY").build();
+        } else {
+            response = BaseResponse.builder().status(500).code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR)).message("NOT SUCESS").build();
         }
         return response;
     }
+
     @Override
-    public String lastPedido()
-    {
+    public String lastPedido() {
         return this.repositoryJPA.lastPedido().toString();
     }
 

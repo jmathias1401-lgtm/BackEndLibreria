@@ -10,10 +10,12 @@ import newfarma.utils.PageableUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class CargoService implements CargoServiceI {
     private final CargoRepository repository;
     private final CargoRepositoryJPA repositoryJPA;
@@ -41,6 +43,7 @@ public class CargoService implements CargoServiceI {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResponse save(CargoRequestDto cargoDto) {
         Cargo cargo = new Cargo();
         cargo.setIdcargo(cargoDto.getIdCargo());
@@ -51,6 +54,7 @@ public class CargoService implements CargoServiceI {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResponse save(Cargo cargo) {
         BaseResponse response;
         Cargo cargo1;
@@ -74,6 +78,7 @@ public class CargoService implements CargoServiceI {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResponse eliminar(Long id) {
         BaseResponse response;
         Cargo cargo = repositoryJPA.findById(id).orElseThrow(EntityNotFoundException::new);

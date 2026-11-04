@@ -8,15 +8,17 @@ import newfarma.persona.dto.PersonaListResponse;
 import newfarma.utils.BaseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class PersonaService implements PersonaServiceI {
     private final PersonaRepository repository;
     PersonaRepositoryJPA PersonaRepositoryJPA;
 
-    public PersonaService(PersonaRepositoryJPA PersonaRepositoryJPA, PersonaRepository repository){
+    public PersonaService(PersonaRepositoryJPA PersonaRepositoryJPA, PersonaRepository repository) {
         this.PersonaRepositoryJPA = PersonaRepositoryJPA;
         this.repository = repository;
     }
@@ -40,11 +42,11 @@ public class PersonaService implements PersonaServiceI {
     }
 
     @Override
-    public BaseResponse save(Persona persona){
+    @Transactional(rollbackFor = Exception.class)
+    public BaseResponse save(Persona persona) {
         BaseResponse response;
         Persona persona1;
-        if(persona.getIdpersona() != null) // actualiza un objeto existente
-        {
+        if (persona.getIdpersona() != null) {
             persona1 = PersonaRepositoryJPA.findById(persona.getIdpersona()).get();
             persona1.setDni(persona.getDni());
             persona1.setRuc(persona.getRuc());
@@ -59,10 +61,9 @@ public class PersonaService implements PersonaServiceI {
             persona1.setTipoPersona(persona.getTipoPersona());
             PersonaRepositoryJPA.save(persona1);
             response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("UPDATE SUCESSFULLY").build();
-        } else // crea un nuevo objeto
-        {
+        } else {
             boolean existName = PersonaRepositoryJPA.existsPersonaByDni(persona.getDni());
-            if (!existName){
+            if (!existName) {
                 PersonaRepositoryJPA.save(persona);
                 response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("SAVED SUCESSFULLY").build();
             } else {
@@ -74,11 +75,11 @@ public class PersonaService implements PersonaServiceI {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BaseResponse eliminar(Long id) {
         BaseResponse response;
         Persona persona = PersonaRepositoryJPA.findById(id).orElseThrow(EntityNotFoundException::new);
-        if (persona.getIdpersona() != null)
-        {
+        if (persona.getIdpersona() != null) {
             PersonaRepositoryJPA.delete(persona);
             response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("DELETE SUCESSFULLY").build();
         } else {
