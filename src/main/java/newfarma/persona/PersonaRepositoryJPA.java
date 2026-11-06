@@ -14,4 +14,8 @@ public interface PersonaRepositoryJPA extends JpaRepository<Persona, Long> {
     boolean existsPersonaByDni(Long dni);
 
     Optional<Persona> findByDni(Long dni);
+
+    boolean existsPersonaByRuc(Long ruc);
+
+    Optional<Persona> findByRuc(Long ruc);
 }

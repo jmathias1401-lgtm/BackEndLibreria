@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import newfarma.cliente.dto.ClienteConsultaDto;
 import newfarma.cliente.dto.ClienteListRequest;
 import newfarma.cliente.dto.ClienteRequestDto;
 import newfarma.cliente.dto.ClienteResponse;
@@ -22,10 +23,25 @@ import org.springframework.web.bind.annotation.*;
 public class ClienteController {
     private final ClienteServiceI serviceI;
     private final ClienteRepositoryJPA clienteRepositoryJPA;
+    private final ConsultaDocumentoService consultaDocumentoService;
 
-    public ClienteController(ClienteServiceI serviceI, ClienteRepositoryJPA clienteRepositoryJPA) {
+    public ClienteController(ClienteServiceI serviceI, ClienteRepositoryJPA clienteRepositoryJPA, ConsultaDocumentoService consultaDocumentoService) {
         this.serviceI = serviceI;
         this.clienteRepositoryJPA = clienteRepositoryJPA;
+        this.consultaDocumentoService = consultaDocumentoService;
+    }
+
+    @Operation(summary = "Consultar y registrar cliente por DNI o RUC", description = "Busca localmente en BD o consulta en RENIEC/SUNAT registrando automáticamente al cliente nuevo")
+    @GetMapping("/consulta/{numero}")
+    public ResponseEntity<ClienteConsultaDto> consultarDocumento(
+            @Parameter(description = "Número de DNI (8 dígitos) o RUC (11 dígitos)", required = true, example = "43705826")
+            @PathVariable String numero) {
+        ClienteConsultaDto resultado = consultaDocumentoService.consultarYRegistrar(numero);
+        if (resultado.isExito()) {
+            return ResponseEntity.ok(resultado);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(resultado);
+        }
     }
 
     @Operation(summary = "Listar clientes", description = "Obtiene una lista paginada y filtrada de clientes registrados")
