@@ -290,6 +290,9 @@ public class ConsultaDocumentoService {
             } else {
                 log.warn("API DNI respondió código HTTP {}", response.statusCode());
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("Interrupción al consultar API de DNI: {}", e.getMessage());
         } catch (Exception e) {
             log.error("Error consultando API externa de DNI: {}", e.getMessage());
         }
@@ -319,6 +322,9 @@ public class ConsultaDocumentoService {
             } else {
                 log.warn("API RUC respondió código HTTP {}", response.statusCode());
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("Interrupción al consultar API de RUC: {}", e.getMessage());
         } catch (Exception e) {
             log.error("Error consultando API externa de RUC: {}", e.getMessage());
         }
