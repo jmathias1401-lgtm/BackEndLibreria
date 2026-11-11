@@ -1,6 +1,7 @@
 package newfarma.cliente;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import newfarma.cliente.dto.ClienteConsultaDto;
 import newfarma.cliente.dto.ClienteListRequest;
 import newfarma.cliente.dto.ClienteRequestDto;
 import newfarma.cliente.dto.ClienteResponse;
@@ -56,6 +57,9 @@ class ClienteControllerTest {
 
     @MockBean
     private ClienteRepositoryJPA clienteRepositoryJPA;
+
+    @MockBean
+    private ConsultaDocumentoService consultaDocumentoService;
 
     @Nested
     @DisplayName("Operación: GET /api/cliente (Listar)")
@@ -173,6 +177,56 @@ class ClienteControllerTest {
                     .andExpect(status().isBadRequest());
 
             verify(serviceI, never()).eliminar(any());
+        }
+    }
+
+    @Nested
+    @DisplayName("Operación: GET /api/cliente/consulta/{numero}")
+    class ConsultaDocumentoTests {
+
+        @Test
+        @DisplayName("Debe retornar HTTP 200 cuando el documento es encontrado o registrado")
+        void consultarDocumento_WhenSuccess_ShouldReturn200() throws Exception {
+            String numero = "43705826";
+            ClienteConsultaDto dto = ClienteConsultaDto.builder()
+                    .exito(true)
+                    .idCliente(1L)
+                    .tipoDocumento("DNI")
+                    .numeroDocumento(numero)
+                    .nombreCompleto("JOSE VALENTIN VICENTE")
+                    .origen("LOCAL")
+                    .build();
+
+            when(consultaDocumentoService.consultarYRegistrar(numero)).thenReturn(dto);
+
+            mockMvc.perform(get("/api/cliente/consulta/{numero}", numero))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.exito").value(true))
+                    .andExpect(jsonPath("$.idCliente").value(1))
+                    .andExpect(jsonPath("$.nombreCompleto").value("JOSE VALENTIN VICENTE"))
+                    .andExpect(jsonPath("$.origen").value("LOCAL"));
+
+            verify(consultaDocumentoService, times(1)).consultarYRegistrar(numero);
+        }
+
+        @Test
+        @DisplayName("Debe retornar HTTP 404 cuando el documento no es encontrado")
+        void consultarDocumento_WhenNotFound_ShouldReturn404() throws Exception {
+            String numero = "00000000";
+            ClienteConsultaDto dto = ClienteConsultaDto.builder()
+                    .exito(false)
+                    .numeroDocumento(numero)
+                    .mensaje("No encontrado")
+                    .build();
+
+            when(consultaDocumentoService.consultarYRegistrar(numero)).thenReturn(dto);
+
+            mockMvc.perform(get("/api/cliente/consulta/{numero}", numero))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.exito").value(false))
+                    .andExpect(jsonPath("$.mensaje").value("No encontrado"));
+
+            verify(consultaDocumentoService, times(1)).consultarYRegistrar(numero);
         }
     }
 }
