@@ -58,12 +58,27 @@ class VentaServiceTest {
             when(ventaRepositoryJPA.existsVentaByCorrelativo("00001")).thenReturn(true);
             assertThat(service.save(dup).getStatus()).isEqualTo(500);
         }
+        @Test @DisplayName("Guarda venta mediante DTO")
+        void save_WithDto_ShouldSucceed() {
+            newfarma.venta.dto.VentaRequestDto dto = new newfarma.venta.dto.VentaRequestDto();
+            dto.setSerie("B003");
+            dto.setCorrelativo("00003");
+            when(ventaRepositoryJPA.existsVentaByCorrelativo("00003")).thenReturn(false);
+            when(ventaRepositoryJPA.save(any())).thenReturn(sample);
+            assertThat(service.save(dto).getStatus()).isEqualTo(200);
+        }
     }
     @Nested @DisplayName("eliminar()") class EliminarTests {
         @Test @DisplayName("Elimina venta existente")
         void eliminar_WhenExists_ShouldDelete() {
             when(ventaRepositoryJPA.findById(1L)).thenReturn(Optional.of(sample));
             assertThat(service.eliminar(1L).getStatus()).isEqualTo(200);
+        }
+        @Test @DisplayName("Retorna 500 si id de venta es nulo")
+        void eliminar_WhenIdNull_ShouldReturn500() {
+            Venta noId = new Venta();
+            when(ventaRepositoryJPA.findById(2L)).thenReturn(Optional.of(noId));
+            assertThat(service.eliminar(2L).getStatus()).isEqualTo(500);
         }
         @Test @DisplayName("Lanza excepcion si no existe")
         void eliminar_WhenNotFound_ShouldThrow() {

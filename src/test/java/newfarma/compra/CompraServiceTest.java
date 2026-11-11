@@ -75,6 +75,12 @@ class CompraServiceTest {
             when(compraRepositoryJPA.findById(1L)).thenReturn(Optional.of(sample));
             assertThat(service.eliminar(1L).getStatus()).isEqualTo(200);
         }
+        @Test @DisplayName("Retorna 500 si id de compra es nulo")
+        void eliminar_WhenIdNull_ShouldReturn500() {
+            Compra noId = new Compra();
+            when(compraRepositoryJPA.findById(2L)).thenReturn(Optional.of(noId));
+            assertThat(service.eliminar(2L).getStatus()).isEqualTo(500);
+        }
         @Test @DisplayName("Lanza excepcion si no existe")
         void eliminar_WhenNotFound_ShouldThrow() {
             when(compraRepositoryJPA.findById(99L)).thenReturn(Optional.empty());

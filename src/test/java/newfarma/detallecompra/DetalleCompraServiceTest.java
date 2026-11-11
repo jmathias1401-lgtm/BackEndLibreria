@@ -58,6 +58,14 @@ class DetalleCompraServiceTest {
             when(detalleCompraRepositoryJPA.existsDetalleCompraByCodigodetallecompra("DC-001")).thenReturn(true);
             assertThat(service.save(dup).getStatus()).isEqualTo(500);
         }
+        @Test @DisplayName("Guarda detalle compra mediante DTO")
+        void save_WithDto_ShouldSucceed() {
+            newfarma.detallecompra.dto.DetalleCompraRequestDto dto = new newfarma.detallecompra.dto.DetalleCompraRequestDto();
+            dto.setCodigoDetalleCompra("DC-003");
+            when(detalleCompraRepositoryJPA.existsDetalleCompraByCodigodetallecompra("DC-003")).thenReturn(false);
+            when(detalleCompraRepositoryJPA.save(any())).thenReturn(sample);
+            assertThat(service.save(dto).getStatus()).isEqualTo(200);
+        }
     }
     @Nested @DisplayName("eliminar()") class EliminarTests {
         @Test @DisplayName("Elimina detalle compra existente")

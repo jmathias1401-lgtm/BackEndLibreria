@@ -102,6 +102,19 @@ class CargoServiceTest {
             assertThat(response.getStatus()).isEqualTo(500);
             verify(repositoryJPA, never()).save(any());
         }
+
+        @Test
+        @DisplayName("Debe guardar cargo mediante DTO")
+        void save_WithDto_ShouldSucceed() {
+            newfarma.cargo.dto.CargoRequestDto dto = new newfarma.cargo.dto.CargoRequestDto();
+            dto.setNombreCargo("DTO_CARGO");
+            when(repositoryJPA.existsCargoByNombrecargo("DTO_CARGO")).thenReturn(false);
+            when(repositoryJPA.save(any(Cargo.class))).thenReturn(sampleCargo);
+
+            BaseResponse response = service.save(dto);
+
+            assertThat(response.getStatus()).isEqualTo(200);
+        }
     }
 
     @Nested

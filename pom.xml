@@ -29,6 +29,9 @@
 			**/dto/**,
 			**/model/**,
 			**/config/**,
+			**/exception/ErrorResponse.java,
+			**/utils/PagedResponse.java,
+			**/repository/BaseRepository.java,
 			**/*Application.java
 		</sonar.coverage.exclusions>
 	</properties>

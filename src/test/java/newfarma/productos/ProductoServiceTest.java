@@ -75,6 +75,41 @@ class ProductoServiceTest {
             MockMultipartFile emptyImage = new MockMultipartFile("imagen", new byte[0]);
             assertThat(service.save(dto, emptyImage).getStatus()).isEqualTo(200);
         }
+        @Test @DisplayName("Actualiza producto existente con relaciones de presentacion, unidad y laboratorio")
+        void save_WhenRelationsPresent_ShouldUpdateRelations() {
+            newfarma.presentacion.PresentacionRepositoryJPA presJPA = mock(newfarma.presentacion.PresentacionRepositoryJPA.class);
+            newfarma.unidadmedida.UnidadMedidaRepositoryJPA umJPA = mock(newfarma.unidadmedida.UnidadMedidaRepositoryJPA.class);
+            newfarma.laboratorio.LaboratorioRepositoryJPA labJPA = mock(newfarma.laboratorio.LaboratorioRepositoryJPA.class);
+
+            org.springframework.test.util.ReflectionTestUtils.setField(service, "presentacionRepositoryJPA", presJPA);
+            org.springframework.test.util.ReflectionTestUtils.setField(service, "unidadMedidaRepositoryJPA", umJPA);
+            org.springframework.test.util.ReflectionTestUtils.setField(service, "laboratorioRepositoryJPA", labJPA);
+
+            ProductoRequestDto dto = new ProductoRequestDto();
+            dto.setIdproducto(1L);
+            dto.setCodigoproducto("MED-001");
+            dto.setNombre("PARACETAMOL");
+            dto.setVencimiento("2025-12-31");
+            dto.setIdpresentacion(1L);
+            dto.setIdunidadmedida(1);
+            dto.setIdlaboratorio(1L);
+
+            dto.unpackLaboratorio(Map.of("idlaboratorio", 1L));
+            dto.unpackPresentacion(Map.of("idpresentacion", 1L));
+            dto.unpackUnidadMedida(Map.of("idunidadmedida", 1));
+            dto.setIdLaboratorioCamel(1L);
+            dto.setIdPresentacionCamel(1L);
+            dto.setIdUnidadMedidaCamel(1);
+
+            when(productoRepositoryJPA.findById(1L)).thenReturn(Optional.of(sample));
+            when(presJPA.findById(1L)).thenReturn(Optional.of(new newfarma.model.Presentacion()));
+            when(umJPA.findById(1)).thenReturn(Optional.of(new newfarma.model.UnidadMedida()));
+            when(labJPA.findById(1L)).thenReturn(Optional.of(new newfarma.model.Laboratorio()));
+            when(productoRepositoryJPA.save(any())).thenReturn(sample);
+
+            MockMultipartFile emptyImage = new MockMultipartFile("imagen", new byte[0]);
+            assertThat(service.save(dto, emptyImage).getStatus()).isEqualTo(200);
+        }
         @Test @DisplayName("Crea nuevo producto cuando codigo no existe")
         void save_WhenNewCode_ShouldCreate() {
             ProductoRequestDto nuevo = new ProductoRequestDto();

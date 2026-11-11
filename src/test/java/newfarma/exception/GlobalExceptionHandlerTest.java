@@ -132,6 +132,110 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Debe manejar EntityNotFoundException con mensaje vacío y retornar mensaje predeterminado")
+    void handleEntityNotFound_WhenEmptyMessage_ShouldReturnDefault() {
+        EntityNotFoundException ex = new EntityNotFoundException("");
+
+        ResponseEntity<ErrorResponse> response = exceptionHandler.handleEntityNotFound(ex, request);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getMessage()).isEqualTo("El recurso solicitado no fue encontrado");
+    }
+
+    @Test
+    @DisplayName("Debe manejar MethodArgumentTypeMismatchException y retornar HTTP 400")
+    void handleTypeMismatch_ShouldReturn400() {
+        org.springframework.web.method.annotation.MethodArgumentTypeMismatchException ex =
+                new org.springframework.web.method.annotation.MethodArgumentTypeMismatchException("abc", Long.class, "id", null, null);
+
+        ResponseEntity<ErrorResponse> response = exceptionHandler.handleTypeMismatch(ex, request);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getMessage()).contains("id");
+    }
+
+    @Test
+    @DisplayName("Debe manejar HttpMessageNotReadableException y retornar HTTP 400")
+    void handleMessageNotReadable_ShouldReturn400() {
+        org.springframework.http.converter.HttpMessageNotReadableException ex =
+                new org.springframework.http.converter.HttpMessageNotReadableException("JSON parse error");
+
+        ResponseEntity<ErrorResponse> response = exceptionHandler.handleMessageNotReadable(ex, request);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getMessage()).contains("JSON inválido");
+    }
+
+    @Test
+    @DisplayName("Debe manejar MissingRequestHeaderException y retornar HTTP 400")
+    void handleMissingRequestHeader_ShouldReturn400() throws NoSuchMethodException {
+        java.lang.reflect.Method method = this.getClass().getDeclaredMethod("setUp");
+        org.springframework.core.MethodParameter parameter = new org.springframework.core.MethodParameter(method, -1);
+        org.springframework.web.bind.MissingRequestHeaderException ex =
+                new org.springframework.web.bind.MissingRequestHeaderException("Authorization", parameter);
+
+        ResponseEntity<ErrorResponse> response = exceptionHandler.handleMissingRequestHeader(ex, request);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getMessage()).contains("Authorization");
+    }
+
+    @Test
+    @DisplayName("Debe manejar MissingServletRequestPartException y retornar HTTP 400")
+    void handleMissingRequestPart_ShouldReturn400() {
+        org.springframework.web.multipart.support.MissingServletRequestPartException ex =
+                new org.springframework.web.multipart.support.MissingServletRequestPartException("file");
+
+        ResponseEntity<ErrorResponse> response = exceptionHandler.handleMissingRequestPart(ex, request);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getMessage()).contains("file");
+    }
+
+    @Test
+    @DisplayName("Debe manejar MissingServletRequestParameterException y retornar HTTP 400")
+    void handleMissingRequestParam_ShouldReturn400() {
+        org.springframework.web.bind.MissingServletRequestParameterException ex =
+                new org.springframework.web.bind.MissingServletRequestParameterException("page", "int");
+
+        ResponseEntity<ErrorResponse> response = exceptionHandler.handleMissingRequestParam(ex, request);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getMessage()).contains("page");
+    }
+
+    @Test
+    @DisplayName("Debe manejar IllegalAccessException y retornar HTTP 401")
+    void handleIllegalAccess_ShouldReturn401() {
+        IllegalAccessException ex = new IllegalAccessException("Acceso ilegal");
+
+        ResponseEntity<ErrorResponse> response = exceptionHandler.handleIllegalAccess(ex, request);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getMessage()).isEqualTo("Acceso ilegal");
+    }
+
+    @Test
+    @DisplayName("Debe manejar HttpRequestMethodNotSupportedException y retornar HTTP 405")
+    void handleMethodNotSupported_ShouldReturn405() {
+        org.springframework.web.HttpRequestMethodNotSupportedException ex =
+                new org.springframework.web.HttpRequestMethodNotSupportedException("PATCH");
+
+        ResponseEntity<ErrorResponse> response = exceptionHandler.handleMethodNotSupported(ex, request);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.METHOD_NOT_ALLOWED);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getMessage()).contains("PATCH");
+    }
+
+    @Test
     @DisplayName("Debe manejar Exception general no controlada y retornar HTTP 500 Internal Server Error")
     void handleGlobalException_ShouldReturn500() {
         RuntimeException ex = new RuntimeException("Error inesperado en base de datos");

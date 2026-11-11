@@ -67,6 +67,19 @@ class ClienteServiceTest {
             when(repositoryJPA.save(any())).thenReturn(sample);
             assertThat(service.save(dto).getStatus()).isEqualTo(200);
         }
+        @Test @DisplayName("Retorna 404 cuando la persona no existe")
+        void save_WhenPersonaNotFound_ShouldReturn404() {
+            Cliente nuevo = new Cliente(); nuevo.setPersona(persona);
+            when(ServicioPersona.buscarPorDni(11111111L)).thenReturn(null);
+            assertThat(service.save(nuevo).getStatus()).isEqualTo(404);
+        }
+        @Test @DisplayName("Retorna 500 cuando la persona ya está asociada a un cliente")
+        void save_WhenPersonaAlreadyInCliente_ShouldReturn500() {
+            Cliente nuevo = new Cliente(); nuevo.setPersona(persona);
+            when(ServicioPersona.buscarPorDni(11111111L)).thenReturn(persona);
+            when(repositoryJPA.existsClienteByPersonaId(1L)).thenReturn(true);
+            assertThat(service.save(nuevo).getStatus()).isEqualTo(500);
+        }
     }
     @Nested @DisplayName("eliminar()") class EliminarTests {
         @Test @DisplayName("Elimina cliente existente")
