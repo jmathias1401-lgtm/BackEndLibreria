@@ -29,6 +29,9 @@ class ProductoServiceTest {
     @Mock private LaboratorioService laboratorioService;
     @Mock private PresentacionService presentacionService;
     @Mock private UnidadMedidaService unidadMedidaService;
+    @Mock private newfarma.laboratorio.LaboratorioRepositoryJPA laboratorioRepositoryJPA;
+    @Mock private newfarma.presentacion.PresentacionRepositoryJPA presentacionRepositoryJPA;
+    @Mock private newfarma.unidadmedida.UnidadMedidaRepositoryJPA unidadMedidaRepositoryJPA;
     @InjectMocks private ProductoService service;
     private Producto sample;
 

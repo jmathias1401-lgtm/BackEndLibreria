@@ -40,28 +40,31 @@ public class ProductoService implements ProductoServiceI {
     private String rutaBaseImagenes;
 
     private final ProductoRepository repository;
-    ProductoRepositoryJPA productoRepositoryJPA;
-    LaboratorioService laboratorioService;
-    PresentacionService presentacionService;
-    UnidadMedidaService unidadMedidaService;
+    private final ProductoRepositoryJPA productoRepositoryJPA;
+    private final LaboratorioService laboratorioService;
+    private final PresentacionService presentacionService;
+    private final UnidadMedidaService unidadMedidaService;
+    private final LaboratorioRepositoryJPA laboratorioRepositoryJPA;
+    private final PresentacionRepositoryJPA presentacionRepositoryJPA;
+    private final UnidadMedidaRepositoryJPA unidadMedidaRepositoryJPA;
 
-    @Autowired(required = false)
-    private LaboratorioRepositoryJPA laboratorioRepositoryJPA;
-
-    @Autowired(required = false)
-    private PresentacionRepositoryJPA presentacionRepositoryJPA;
-
-    @Autowired(required = false)
-    private UnidadMedidaRepositoryJPA unidadMedidaRepositoryJPA;
-
-    public ProductoService(ProductoRepositoryJPA productoRepositoryJPA, ProductoRepository repository,
-            LaboratorioService laboratorioService, PresentacionService presentacionService,
-            UnidadMedidaService unidadMedidaService) {
+    public ProductoService(
+            ProductoRepositoryJPA productoRepositoryJPA,
+            ProductoRepository repository,
+            LaboratorioService laboratorioService,
+            PresentacionService presentacionService,
+            UnidadMedidaService unidadMedidaService,
+            @Autowired(required = false) LaboratorioRepositoryJPA laboratorioRepositoryJPA,
+            @Autowired(required = false) PresentacionRepositoryJPA presentacionRepositoryJPA,
+            @Autowired(required = false) UnidadMedidaRepositoryJPA unidadMedidaRepositoryJPA) {
         this.productoRepositoryJPA = productoRepositoryJPA;
         this.repository = repository;
         this.laboratorioService = laboratorioService;
         this.presentacionService = presentacionService;
         this.unidadMedidaService = unidadMedidaService;
+        this.laboratorioRepositoryJPA = laboratorioRepositoryJPA;
+        this.presentacionRepositoryJPA = presentacionRepositoryJPA;
+        this.unidadMedidaRepositoryJPA = unidadMedidaRepositoryJPA;
     }
 
     @Override
