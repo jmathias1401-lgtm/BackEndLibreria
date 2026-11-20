@@ -11,6 +11,9 @@ import newfarma.repository.BaseRepository;
 import newfarma.utils.Util;
 import org.springframework.stereotype.Repository;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +45,36 @@ public class ventaRepository extends BaseRepository {
             criteriaSearch = builder.and(criteriaSearch, nombrePredicate);
         }
 
-        List<Predicate> predicates = List.of(criteriaParams, criteriaSearch);
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(criteriaParams);
+
+        if (params.getSearch() != null && !params.getSearch().isBlank()) {
+            predicates.add(criteriaSearch);
+        }
+
+        if (params.getFechaInicio() != null && !params.getFechaInicio().isBlank()) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date start = sdf.parse(params.getFechaInicio().trim());
+                predicates.add(builder.greaterThanOrEqualTo(root.get("fechaventa"), start));
+            } catch (Exception ignored) {}
+        }
+
+        if (params.getFechaFin() != null && !params.getFechaFin().isBlank()) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date end = sdf.parse(params.getFechaFin().trim() + " 23:59:59");
+                predicates.add(builder.lessThanOrEqualTo(root.get("fechaventa"), end));
+            } catch (Exception ignored) {}
+        }
+
+        if (params.getIdTipoComprobante() != null && params.getIdTipoComprobante() > 0) {
+            predicates.add(builder.equal(root.get("tipoComprobante").get("idtipocomprobante"), params.getIdTipoComprobante()));
+        }
+
+        if (params.getIdEmpleado() != null && params.getIdEmpleado() > 0) {
+            predicates.add(builder.equal(root.get("empleado").get("idempleado"), params.getIdEmpleado()));
+        }
 
         return executePaginatedQuery(entityManager, query, root, builder, predicates, mode, params.getOffset(), params.getXpage());
     }

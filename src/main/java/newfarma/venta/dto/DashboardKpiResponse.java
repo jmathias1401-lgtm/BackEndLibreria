@@ -55,3 +55,4 @@ public class DashboardKpiResponse {
         private Double totalMonto;
     }
 }
+

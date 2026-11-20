@@ -3,7 +3,8 @@ package newfarma.venta.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter@Getter
+@Setter
+@Getter
 public class VentaListRequest {
     Integer page;
     Integer xpage;
@@ -11,5 +12,8 @@ public class VentaListRequest {
     String correlativo;
     String serie;
     String search;
-
+    String fechaInicio;
+    String fechaFin;
+    Long idTipoComprobante;
+    Long idEmpleado;
 }
