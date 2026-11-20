@@ -3,6 +3,7 @@ package newfarma.detalleventa;
 import jakarta.persistence.EntityNotFoundException;
 import newfarma.detalleventa.dto.DetalleVentaListRequest;
 import newfarma.detalleventa.dto.DetalleVentaListResponse;
+import newfarma.detalleventa.dto.VentaTrazabilidadDto;
 import newfarma.model.detalleventa;
 import newfarma.utils.BaseResponse;
 import org.junit.jupiter.api.*;
@@ -92,6 +93,38 @@ class DetalleVentaServiceTest {
             when(detalleVentaRepositoryJPA.ventasMes(10, 2024)).thenReturn(List.of(sample));
             DetalleVentaListResponse r = service.ventasMes(10, 2024);
             assertThat(r.getList()).hasSize(1);
+        }
+    }
+    @Nested @DisplayName("getTrazabilidadVentas(idProducto)") class TrazabilidadTests {
+        @Test @DisplayName("Retorna lista de ventas con detalle de vendedor, cliente y unidades")
+        void getTrazabilidadVentas_ShouldReturnList() {
+            Object[] row = new Object[]{
+                100L, "2026-11-20 15:30:00", "B001", "0000123", "BOLETA", 2, 4.5, 9.0, "Juan Perez", "Maria Lopez"
+            };
+            when(detalleVentaRepositoryJPA.findTrazabilidadVentasByProducto(1L))
+                .thenReturn(Collections.singletonList(row));
+
+            List<VentaTrazabilidadDto> r = service.getTrazabilidadVentas(1L);
+            assertThat(r).hasSize(1);
+            assertThat(r.get(0).getVendedor()).isEqualTo("Juan Perez");
+            assertThat(r.get(0).getCliente()).isEqualTo("Maria Lopez");
+            assertThat(r.get(0).getUnidades()).isEqualTo(2);
+            assertThat(r.get(0).getComprobante()).isEqualTo("BOLETA B001-0000123");
+        }
+
+        @Test @DisplayName("Maneja valores nulos en fila de trazabilidad con defaults seguros")
+        void getTrazabilidadVentas_WithNulls_ShouldHandleGracefully() {
+            Object[] row = new Object[]{
+                null, null, null, null, null, null, null, null, "", "   "
+            };
+            when(detalleVentaRepositoryJPA.findTrazabilidadVentasByProducto(2L))
+                .thenReturn(Collections.singletonList(row));
+
+            List<VentaTrazabilidadDto> r = service.getTrazabilidadVentas(2L);
+            assertThat(r).hasSize(1);
+            assertThat(r.get(0).getVendedor()).isEqualTo("No registrado");
+            assertThat(r.get(0).getCliente()).isEqualTo("Público General");
+            assertThat(r.get(0).getUnidades()).isEqualTo(0);
         }
     }
 }

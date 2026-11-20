@@ -6,10 +6,13 @@ import jakarta.validation.Valid;
 import newfarma.detalleventa.dto.DetalleVentaListRequest;
 import newfarma.detalleventa.dto.DetalleVentaListResponse;
 import newfarma.detalleventa.dto.DetalleVentaRequestDto;
+import newfarma.detalleventa.dto.VentaTrazabilidadDto;
 import newfarma.utils.BaseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/detalleventa")
@@ -51,5 +54,11 @@ public class DetalleVentaController {
     @GetMapping("ventasMes/{mes}/{anio}")
     public ResponseEntity<DetalleVentaListResponse> ventasMes(@PathVariable int mes, @PathVariable int anio) {
         return new ResponseEntity<>(serviceI.ventasMes(mes, anio), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Consultar trazabilidad de ventas por producto", description = "Obtiene quién vendió, cuándo, cuántas unidades y en qué comprobante para un producto")
+    @GetMapping("/trazabilidad/producto/{id}")
+    public ResponseEntity<List<VentaTrazabilidadDto>> getTrazabilidadVentas(@PathVariable Long id) {
+        return new ResponseEntity<>(serviceI.getTrazabilidadVentas(id), HttpStatus.OK);
     }
 }

@@ -5,11 +5,13 @@ import newfarma.model.detalleventa;
 import newfarma.detalleventa.dto.DetalleVentaListRequest;
 import newfarma.detalleventa.dto.DetalleVentaListResponse;
 import newfarma.detalleventa.dto.DetalleVentaRequestDto;
+import newfarma.detalleventa.dto.VentaTrazabilidadDto;
 import newfarma.utils.BaseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -132,5 +134,31 @@ public class DetalleVentaService implements DetalleVentaServiceI {
                 .list(listDetalleVenta)
                 .build();
         return response;
+    }
+
+    @Override
+    public List<VentaTrazabilidadDto> getTrazabilidadVentas(Long idProducto) {
+        List<Object[]> rows = detalleVentaRepositoryJPA.findTrazabilidadVentasByProducto(idProducto);
+        List<VentaTrazabilidadDto> list = new ArrayList<>();
+        if (rows != null) {
+            for (Object[] r : rows) {
+                String comp = (r[4] != null ? r[4].toString() : "TICKET");
+                String serie = (r[2] != null ? r[2].toString() : "");
+                String correlativo = (r[3] != null ? r[3].toString() : "");
+                String comprobanteFull = (comp + " " + serie + "-" + correlativo).trim();
+
+                list.add(VentaTrazabilidadDto.builder()
+                        .idDetalleVenta(r[0] != null ? ((Number) r[0]).longValue() : null)
+                        .fechaVenta(r[1] != null ? r[1].toString() : null)
+                        .comprobante(comprobanteFull)
+                        .unidades(r[5] != null ? ((Number) r[5]).intValue() : 0)
+                        .precioUnitario(r[6] != null ? ((Number) r[6]).doubleValue() : 0.0)
+                        .total(r[7] != null ? ((Number) r[7]).doubleValue() : 0.0)
+                        .vendedor(r[8] != null && !r[8].toString().isBlank() ? r[8].toString().trim() : "No registrado")
+                        .cliente(r[9] != null && !r[9].toString().isBlank() ? r[9].toString().trim() : "Público General")
+                        .build());
+            }
+        }
+        return list;
     }
 }

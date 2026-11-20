@@ -45,6 +45,7 @@ public class SecurityConfig {
                         "/api/auth/**",
                         "/api/cargo/**",
                         "/api/kardex/**",
+                        "/api/detalleventa/trazabilidad/**",
                         "/api/check/**",
                         "/",
                         "/v3/api-docs/**",
