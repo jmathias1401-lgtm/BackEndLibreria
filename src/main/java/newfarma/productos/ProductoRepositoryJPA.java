@@ -20,4 +20,7 @@ public interface ProductoRepositoryJPA extends JpaRepository<Producto, Long> {
     @Query(value = "select count(*) from Producto", nativeQuery = true)
     public Integer CountProduct();
 
+    @Query(value = "SELECT COUNT(CASE WHEN stock <= 5 THEN 1 END), COUNT(CASE WHEN stock = 0 THEN 1 END), COUNT(*) FROM producto", nativeQuery = true)
+    public List<Object[]> getStockAlertSummary();
+
 }

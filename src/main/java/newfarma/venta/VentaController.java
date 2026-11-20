@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import newfarma.utils.BaseResponse;
+import newfarma.venta.dto.DashboardKpiResponse;
 import newfarma.venta.dto.VentaListRequest;
 import newfarma.venta.dto.VentaListResponse;
 import newfarma.venta.dto.VentaRequestDto;
@@ -62,5 +63,11 @@ public class VentaController {
             @Parameter(description = "Identificador único de la venta", required = true, example = "1")
             @PathVariable Long id) {
         return new ResponseEntity<>(serviceI.eliminar(id), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Obtener KPIs de ventas e inventario en tiempo real", description = "Calcula métricas clave del día, mes, caja, flujo horario y alertas de stock")
+    @GetMapping("/kpis-tiempo-real")
+    public ResponseEntity<DashboardKpiResponse> getDashboardKpis() {
+        return new ResponseEntity<>(serviceI.getDashboardKpis(), HttpStatus.OK);
     }
 }

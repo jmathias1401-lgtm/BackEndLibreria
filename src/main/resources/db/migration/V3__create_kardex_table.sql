@@ -16,3 +16,4 @@ CREATE TABLE IF NOT EXISTS `kardex` (
   KEY `fk_kardex_producto_idx` (`producto_idproducto`),
   CONSTRAINT `fk_kardex_producto` FOREIGN KEY (`producto_idproducto`) REFERENCES `producto` (`idproducto`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+

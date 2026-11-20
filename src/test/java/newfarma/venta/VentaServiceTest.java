@@ -2,6 +2,8 @@ package newfarma.venta;
 
 import jakarta.persistence.EntityNotFoundException;
 import newfarma.model.Venta;
+import newfarma.productos.ProductoRepositoryJPA;
+import newfarma.venta.dto.DashboardKpiResponse;
 import newfarma.venta.dto.VentaListRequest;
 import newfarma.venta.dto.VentaListResponse;
 import newfarma.utils.BaseResponse;
@@ -20,6 +22,7 @@ import static org.mockito.Mockito.*;
 class VentaServiceTest {
     @Mock private ventaRepository repository;
     @Mock private VentaRepositoryJPA ventaRepositoryJPA;
+    @Mock private ProductoRepositoryJPA productoRepositoryJPA;
     @InjectMocks private VentaService service;
     private Venta sample;
 
@@ -84,6 +87,40 @@ class VentaServiceTest {
         void eliminar_WhenNotFound_ShouldThrow() {
             when(ventaRepositoryJPA.findById(99L)).thenReturn(Optional.empty());
             assertThrows(EntityNotFoundException.class, () -> service.eliminar(99L));
+        }
+    }
+    @Nested @DisplayName("getDashboardKpis()") class DashboardKpiTests {
+        @Test @DisplayName("Calcula metricas de ventas y stock correctamente")
+        void getDashboardKpis_ShouldReturnAggregates() {
+            Object[] hoyRow = new Object[]{150.0, 5};
+            when(ventaRepositoryJPA.getVentasHoySummary()).thenReturn(Collections.singletonList(hoyRow));
+
+            Object[] mesRow = new Object[]{2400.0, 40};
+            when(ventaRepositoryJPA.getVentasMesSummary()).thenReturn(Collections.singletonList(mesRow));
+
+            Object[] prodRow = new Object[]{12, 3, 100};
+            when(productoRepositoryJPA.getStockAlertSummary()).thenReturn(Collections.singletonList(prodRow));
+
+            Object[] hrRow = new Object[]{10, 2, 80.0};
+            when(ventaRepositoryJPA.getVentasPorHoraHoy()).thenReturn(Collections.singletonList(hrRow));
+
+            Object[] compRow = new Object[]{"BOLETA", 30, 1800.0};
+            when(ventaRepositoryJPA.getVentasPorComprobanteMes()).thenReturn(Collections.singletonList(compRow));
+
+            Object[] vendRow = new Object[]{1L, "Juan Perez", 25, 1500.0};
+            when(ventaRepositoryJPA.getTopVendedoresMes()).thenReturn(Collections.singletonList(vendRow));
+
+            DashboardKpiResponse res = service.getDashboardKpis();
+            assertThat(res.getVentasHoyMonto()).isEqualTo(150.0);
+            assertThat(res.getVentasHoyCantidad()).isEqualTo(5);
+            assertThat(res.getTicketPromedioHoy()).isEqualTo(30.0);
+            assertThat(res.getVentasMesMonto()).isEqualTo(2400.0);
+            assertThat(res.getProductosStockCritico()).isEqualTo(12);
+            assertThat(res.getProductosAgotados()).isEqualTo(3);
+            assertThat(res.getTotalProductos()).isEqualTo(100);
+            assertThat(res.getVentasPorHoraHoy()).hasSize(1);
+            assertThat(res.getVentasPorComprobanteMes()).hasSize(1);
+            assertThat(res.getTopVendedoresMes()).hasSize(1);
         }
     }
 }

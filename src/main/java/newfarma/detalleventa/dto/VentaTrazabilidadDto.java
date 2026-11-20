@@ -19,3 +19,4 @@ public class VentaTrazabilidadDto {
     private String vendedor;
     private String cliente;
 }
+
