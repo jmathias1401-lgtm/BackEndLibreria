@@ -35,6 +35,19 @@ public class KardexService implements KardexServiceI {
     }
 
     @Override
+    public KardexListResponse listAuditoria(String tipoOperacion, String usuario, String search) {
+        List<Kardex> list = kardexRepositoryJPA.findAuditoriaFiltrada(
+                (tipoOperacion != null && !tipoOperacion.isBlank() && !tipoOperacion.equalsIgnoreCase("TODOS")) ? tipoOperacion.trim() : null,
+                (usuario != null && !usuario.isBlank()) ? usuario.trim() : null,
+                (search != null && !search.isBlank()) ? search.trim() : null
+        );
+        return KardexListResponse.builder()
+                .total(list.size())
+                .list(list)
+                .build();
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public BaseResponse save(KardexRequestDto dto) {
         if (dto.getIdProducto() == null) {

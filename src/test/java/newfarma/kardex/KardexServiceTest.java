@@ -83,6 +83,31 @@ class KardexServiceTest {
     }
 
     @Test
+    void testListAuditoria_ReturnsFilteredMovements() {
+        when(kardexRepositoryJPA.findAuditoriaFiltrada("SALIDA", "admin", "Cuaderno"))
+                .thenReturn(Collections.singletonList(kardex));
+
+        KardexListResponse response = kardexService.listAuditoria("SALIDA", "admin", "Cuaderno");
+
+        assertNotNull(response);
+        assertEquals(1, response.getTotal());
+        assertEquals("Conteo físico de estante", response.getList().get(0).getMotivo());
+        verify(kardexRepositoryJPA, times(1)).findAuditoriaFiltrada("SALIDA", "admin", "Cuaderno");
+    }
+
+    @Test
+    void testListAuditoria_WithTodos_PassesNullTipoOperacion() {
+        when(kardexRepositoryJPA.findAuditoriaFiltrada(null, null, null))
+                .thenReturn(Collections.singletonList(kardex));
+
+        KardexListResponse response = kardexService.listAuditoria("TODOS", "  ", "");
+
+        assertNotNull(response);
+        assertEquals(1, response.getTotal());
+        verify(kardexRepositoryJPA, times(1)).findAuditoriaFiltrada(null, null, null);
+    }
+
+    @Test
     void testSave_Success() {
         KardexRequestDto dto = KardexRequestDto.builder()
                 .idProducto(1L)

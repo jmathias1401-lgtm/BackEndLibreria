@@ -19,6 +19,15 @@ public class KardexController {
         this.kardexService = kardexService;
     }
 
+    @Operation(summary = "Auditoría global de movimientos de kardex", description = "Lista y filtra movimientos de inventario, mermas, roturas y ajustes por tipo, usuario y motivo")
+    @GetMapping
+    public ResponseEntity<KardexListResponse> listAuditoria(
+            @RequestParam(required = false) String tipoOperacion,
+            @RequestParam(required = false) String usuario,
+            @RequestParam(required = false) String search) {
+        return new ResponseEntity<>(kardexService.listAuditoria(tipoOperacion, usuario, search), HttpStatus.OK);
+    }
+
     @Operation(summary = "Listar movimientos de kardex por producto", description = "Obtiene el historial de cambios y movimientos de inventario de un producto")
     @GetMapping("/producto/{id}")
     public ResponseEntity<KardexListResponse> listByProducto(@PathVariable Long id) {
