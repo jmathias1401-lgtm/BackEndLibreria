@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -59,7 +60,7 @@ public class KardexService implements KardexServiceI {
 
         Kardex kardex = Kardex.builder()
                 .producto(producto)
-                .fecha(LocalDateTime.now())
+                .fecha(LocalDateTime.now(ZoneId.of("America/Lima")))
                 .tipoOperacion(dto.getTipoOperacion() != null ? dto.getTipoOperacion() : "AJUSTE")
                 .motivo(dto.getMotivo() != null ? dto.getMotivo() : "Ajuste de inventario")
                 .cantidad(dto.getCantidad() != null ? dto.getCantidad() : 0)

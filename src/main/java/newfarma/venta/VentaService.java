@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -56,7 +57,11 @@ public class VentaService implements VentaServiceI {
         venta.setIdventa(ventaDto.getIdVenta());
         venta.setSerie(ventaDto.getSerie());
         venta.setCorrelativo(ventaDto.getCorrelativo());
-        venta.setFechaventa(ventaDto.getFechaVenta());
+        Date fechaVenta = ventaDto.getFechaVenta();
+        if (fechaVenta == null || ventaDto.getIdVenta() == null) {
+            fechaVenta = new java.util.Date();
+        }
+        venta.setFechaventa(fechaVenta);
         venta.setIgv(ventaDto.getIgv());
         venta.setSubtotal(ventaDto.getSubtotal());
         venta.setCostoventa(ventaDto.getCostoVenta());
@@ -76,7 +81,9 @@ public class VentaService implements VentaServiceI {
             venta1 = ventaRepositoryJPA.findById(venta.getIdventa()).get();
             venta1.setCorrelativo(venta.getCorrelativo());
             venta1.setSerie(venta.getSerie());
-            venta1.setFechaventa(venta.getFechaventa());
+            if (venta.getFechaventa() != null) {
+                venta1.setFechaventa(venta.getFechaventa());
+            }
             venta1.setIgv(venta.getIgv());
             venta1.setSubtotal(venta.getSubtotal());
             venta1.setCostoventa(venta.getCostoventa());
@@ -87,6 +94,9 @@ public class VentaService implements VentaServiceI {
             response = BaseResponse.builder().status(200).code(String.valueOf(HttpStatus.OK)).message("UPDATE SUCESSFULLY").build();
         } else // crea un nuevo objeto
         {
+            if (venta.getFechaventa() == null) {
+                venta.setFechaventa(new java.util.Date());
+            }
             boolean existName = ventaRepositoryJPA.existsVentaByCorrelativo(venta.getCorrelativo());
             if (!existName){
                Long idventa = ventaRepositoryJPA.save(venta).getIdventa();

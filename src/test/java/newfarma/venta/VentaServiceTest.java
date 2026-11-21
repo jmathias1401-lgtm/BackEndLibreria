@@ -67,7 +67,11 @@ class VentaServiceTest {
             dto.setSerie("B003");
             dto.setCorrelativo("00003");
             when(ventaRepositoryJPA.existsVentaByCorrelativo("00003")).thenReturn(false);
-            when(ventaRepositoryJPA.save(any())).thenReturn(sample);
+            when(ventaRepositoryJPA.save(any())).thenAnswer(invocation -> {
+                Venta v = invocation.getArgument(0);
+                assertThat(v.getFechaventa()).isNotNull();
+                return sample;
+            });
             assertThat(service.save(dto).getStatus()).isEqualTo(200);
         }
     }
