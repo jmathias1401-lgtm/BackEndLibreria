@@ -47,6 +47,7 @@ public class SecurityConfig {
                         "/api/kardex/**",
                         "/api/detalleventa/trazabilidad/**",
                         "/api/venta/kpis-tiempo-real",
+                        "/api/venta/rendimiento-empleados",
                         "/api/check/**",
                         "/",
                         "/v3/api-docs/**",

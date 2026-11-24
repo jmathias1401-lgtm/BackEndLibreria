@@ -34,4 +34,19 @@ public interface VentaRepositoryJPA extends JpaRepository<Venta,Long> {
             "WHERE YEAR(v.fechaventa) = YEAR(CURRENT_DATE) AND MONTH(v.fechaventa) = MONTH(CURRENT_DATE) " +
             "GROUP BY e.idempleado, pe.nombre, pe.paterno ORDER BY sm DESC LIMIT 5", nativeQuery = true)
     public List<Object[]> getTopVendedoresMes();
+
+    @Query(value = "SELECT " +
+            "e.idempleado, " +
+            "TRIM(CONCAT(COALESCE(p.nombre, ''), ' ', COALESCE(p.paterno, ''), ' ', COALESCE(p.materno, ''))) as empleado, " +
+            "COALESCE(SUM(CASE WHEN DATE(v.fechaventa) = CURRENT_DATE THEN v.costoventa ELSE 0 END), 0) as ventas_hoy, " +
+            "COALESCE(SUM(CASE WHEN v.fechaventa >= DATE_SUB(CURRENT_DATE, INTERVAL WEEKDAY(CURRENT_DATE) DAY) THEN v.costoventa ELSE 0 END), 0) as ventas_semana, " +
+            "COALESCE(SUM(CASE WHEN YEAR(v.fechaventa) = YEAR(CURRENT_DATE) AND MONTH(v.fechaventa) = MONTH(CURRENT_DATE) THEN v.costoventa ELSE 0 END), 0) as ventas_mes, " +
+            "COALESCE(SUM(CASE WHEN YEAR(v.fechaventa) = YEAR(CURRENT_DATE) THEN v.costoventa ELSE 0 END), 0) as ventas_anio, " +
+            "COUNT(v.idventa) as total_transacciones " +
+            "FROM empleado e " +
+            "JOIN persona p ON e.persona_idpersona = p.idpersona " +
+            "LEFT JOIN venta v ON v.empleado_idempleado = e.idempleado " +
+            "GROUP BY e.idempleado, p.nombre, p.paterno, p.materno " +
+            "ORDER BY ventas_mes DESC, ventas_anio DESC", nativeQuery = true)
+    public List<Object[]> getRendimientoEmpleadosAgregados();
 }

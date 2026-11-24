@@ -17,4 +17,6 @@ public interface VentaServiceI {
     BaseResponse eliminar(Long id);
 
     DashboardKpiResponse getDashboardKpis();
+
+    java.util.List<newfarma.venta.dto.EmpleadoRendimientoDto> getRendimientoEmpleados();
 }

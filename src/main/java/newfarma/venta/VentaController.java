@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import newfarma.utils.BaseResponse;
 import newfarma.venta.dto.DashboardKpiResponse;
+import newfarma.venta.dto.EmpleadoRendimientoDto;
 import newfarma.venta.dto.VentaListRequest;
 import newfarma.venta.dto.VentaListResponse;
 import newfarma.venta.dto.VentaRequestDto;
@@ -69,5 +70,11 @@ public class VentaController {
     @GetMapping("/kpis-tiempo-real")
     public ResponseEntity<DashboardKpiResponse> getDashboardKpis() {
         return new ResponseEntity<>(serviceI.getDashboardKpis(), HttpStatus.OK);
+    }
+
+    @Operation(summary = "Obtener rendimiento acumulado e incentivos de empleados", description = "Consolida las ventas de cada vendedor por día, semana, mes y año para cálculo de incentivos y comisiones")
+    @GetMapping("/rendimiento-empleados")
+    public ResponseEntity<java.util.List<EmpleadoRendimientoDto>> getRendimientoEmpleados() {
+        return new ResponseEntity<>(serviceI.getRendimientoEmpleados(), HttpStatus.OK);
     }
 }

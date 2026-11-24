@@ -126,5 +126,22 @@ class VentaServiceTest {
             assertThat(res.getVentasPorComprobanteMes()).hasSize(1);
             assertThat(res.getTopVendedoresMes()).hasSize(1);
         }
+
+        @Test @DisplayName("Calcula rendimiento de empleados acumulado")
+        void getRendimientoEmpleados_ShouldReturnAggregatedMetrics() {
+            Object[] row = new Object[]{1L, "Jorge Jorge", 150.0, 750.0, 3000.0, 15000.0, 45};
+            when(ventaRepositoryJPA.getRendimientoEmpleadosAgregados()).thenReturn(Collections.singletonList(row));
+
+            java.util.List<newfarma.venta.dto.EmpleadoRendimientoDto> lista = service.getRendimientoEmpleados();
+            assertThat(lista).hasSize(1);
+            newfarma.venta.dto.EmpleadoRendimientoDto dto = lista.get(0);
+            assertThat(dto.getIdEmpleado()).isEqualTo(1L);
+            assertThat(dto.getEmpleado()).isEqualTo("Jorge Jorge");
+            assertThat(dto.getVentasHoy()).isEqualTo(150.0);
+            assertThat(dto.getVentasSemana()).isEqualTo(750.0);
+            assertThat(dto.getVentasMes()).isEqualTo(3000.0);
+            assertThat(dto.getVentasAnio()).isEqualTo(15000.0);
+            assertThat(dto.getTotalTransacciones()).isEqualTo(45);
+        }
     }
 }

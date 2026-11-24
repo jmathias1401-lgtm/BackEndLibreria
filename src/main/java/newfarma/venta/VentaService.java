@@ -6,6 +6,7 @@ import newfarma.model.Producto;
 import newfarma.model.Venta;
 import newfarma.productos.ProductoRepositoryJPA;
 import newfarma.venta.dto.DashboardKpiResponse;
+import newfarma.venta.dto.EmpleadoRendimientoDto;
 import newfarma.venta.dto.VentaListRequest;
 import newfarma.venta.dto.VentaListResponse;
 import newfarma.venta.dto.VentaRequestDto;
@@ -217,5 +218,25 @@ public class VentaService implements VentaServiceI {
                 .ventasPorComprobanteMes(porComp)
                 .topVendedoresMes(topVendedores)
                 .build();
+    }
+
+    @Override
+    public List<EmpleadoRendimientoDto> getRendimientoEmpleados() {
+        List<EmpleadoRendimientoDto> resultado = new ArrayList<>();
+        List<Object[]> rows = ventaRepositoryJPA.getRendimientoEmpleadosAgregados();
+        if (rows != null) {
+            for (Object[] r : rows) {
+                resultado.add(EmpleadoRendimientoDto.builder()
+                        .idEmpleado(r[0] != null ? ((Number) r[0]).longValue() : null)
+                        .empleado(r[1] != null && !r[1].toString().isBlank() ? r[1].toString() : "Sin Nombre")
+                        .ventasHoy(r[2] != null ? ((Number) r[2]).doubleValue() : 0.0)
+                        .ventasSemana(r[3] != null ? ((Number) r[3]).doubleValue() : 0.0)
+                        .ventasMes(r[4] != null ? ((Number) r[4]).doubleValue() : 0.0)
+                        .ventasAnio(r[5] != null ? ((Number) r[5]).doubleValue() : 0.0)
+                        .totalTransacciones(r[6] != null ? ((Number) r[6]).intValue() : 0)
+                        .build());
+            }
+        }
+        return resultado;
     }
 }
